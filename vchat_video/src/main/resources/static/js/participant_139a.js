@@ -32,13 +32,11 @@ var fullscreen = false; var ios_fullscreen = false; var cinemaEnabled = false;
 let already_been_there = false;
 let first_time = true;
 
-//const dumbHandler = (e) => {e.preventDefault(); e.stopPropagation(); console.log('clicked dumb!')}
-
 const doSwitchOneMode = (el, acc_host, sum_host) => {if (false) console.log(el);
 	let sp_setter_url_cur = sp_setter_url+'/#/binder/to/:'+acc_host+'/amount/:'+sum_host;
 	request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => { 
 	   if (!data.length) {
-		//fetch('https://'+window.location.hostname+':'+port+'/cgi/genc/checker.pl?par=session', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
+
 		fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl?par=session', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
 			let sess = respo; 
 			// console.log('respo here is', sess);
@@ -52,26 +50,20 @@ const doSwitchOneMode = (el, acc_host, sum_host) => {if (false) console.log(el);
 		//no jquery	 
 			  mod6 = new mBox.Modal({content: sp_setter, setStyles: {content: {padding: '25px', lineHeight: 24, margin: '0 auto', fontSize: fs, color: '#222', height: h, maxHeight: '450px'}}, width:280, id:'m6', height: h, zIndex: 31005, position: 'relative', title: 'SkyRHC wallet', attach: 'newacc'}); document.id('newacc').click();
 			  if (document.id('sp_setter') && first_time) {
-			    //document.id('sp_setter').addEventListener('click', dumbHandler)
-			    //setTimeout(function() {document.id('sp_setter').removeEventListener('click', dumbHandler);console.log('back from dumb!')}, 5000);
+
 			    document.id('sp_setter').style.display = 'none';document.id('sp_setter_dummy').style.display = 'block';// hack ash: do not disturb iframe while it's connecting
 			    setTimeout(function() {document.id('sp_setter').style.display='block';document.id('sp_setter_dummy').style.display = 'none';/*console.log('back from dumb!')*/}, 3000);
 			    first_time = false;
 			  }
 			  
 			  let topo = (window.innerHeight-540)/2 - 30; topo = topo + 'px'; if (!small_device) document.id('m6').style.top=topo;	//trim it, sir
-			  // document.id('m6').onclick=function() {document.id('m6').style.display='none';document.id('m6').dispose();};
-			  	
-		//if we want to use both mBox and jQuery
-			  //mod6 = new mBox.Modal({content: sp_setter,setStyles: {content: {padding: '25px', lineHeight: 24, margin: '0 auto', fontSize: 18, color: '#222', height: h}}, width:280, id:'m6', height: h, title: 'SkyRHC wallet', attach: 'newacc'}); document.id('newacc').click(); let lefto = (window.innerWidth-340)/2; lefto = lefto + 'px'; let topo = (window.innerHeight-540)/2; topo = topo + 'px'; if (small_device) topo = '12vh';document.id('m6').style.cursor='pointer'; document.id('m6').style.display='block'; document.id('m6').style.left=lefto; document.id('m6').style.top=topo; (function(){document.id('m6').fade(1);}).delay(200); document.id('m6').onclick=function(){document.id('m6').style.display='none';};
+
 			} else {
 				if (already_been_there) return;
 			}
 		}).catch(err => console.log(err));
 	   } else {
-		/*
-		if(!playSomeMusic&&!shareSomeScreen){fullscreen=true; chat_shown=1;document.id("logger").click();let re=/video-/gi;let a=el.id.replace(re,"");let v=document.id("video-"+a);if(v && !v.fullscreenElement && !check_iOS()){v.requestFullscreen()}(function(){document.id("room-header").style.display="none";if (normal_mode) document.id("room-backer").style.display="block";if (!small_device) {document.id("room").style.minWidth = "480px";document.id("room").style.marginLeft = "0px";}if(Object.keys(participants).length){for(var key in participants){if(participants[key].name!=a){participants[key].dispose();delete participants[key]}}}let c=document.id("one-"+a);if (c) c.fade(0);}).delay(500)}else{if(playSomeMusic){flashText("PLAYING VIDEO! STOP?")}else{flashText("SHARING SCREEN! STOP?")}}
-		*/
+
 		if (!switched) { switched = true; rejoin(); } else {if(!playSomeMusic && !shareSomeScreen){fullscreen=true; chat_shown=1;document.id("logger").click();let re=/video-/gi;let a=el.id.replace(re,"");let v=document.id("video-"+a);if(v && !v.fullscreenElement && !check_iOS()){v.requestFullscreen()}(function(){document.id("room-header").style.display="none";if (normal_mode) document.id("room-backer").style.display="block";if (!small_device) {document.id("room").style.minWidth = "480px";document.id("room").style.marginLeft = "0px";}if(Object.keys(participants).length){for(var key in participants){if(participants[key].name!=a){participants[key].dispose();delete participants[key]}}}}).delay(500)}else{if(playSomeMusic){flashText("PLAYING VIDEO! STOP?")}else{flashText("SHARING SCREEN! STOP?")}}}
 	   }
 	});	
@@ -104,7 +96,6 @@ function Participant(name, myname, mode, myrole) {
 	
 	var this_is_unmuted = false;
         var ai = new RegExp('^A:','g');
-        //if (name.match(ai)) {this_is_unmuted = true; sound_on_played = 0;}
 	
 	let ct = 0;
 	for ( var key in participants) {
@@ -121,17 +112,9 @@ function Participant(name, myname, mode, myrole) {
  	
 	var coo_muted = loadData(name+'_muted');
 	
-	//no sound from other guests on default, but from gurus ok
-	//if (coo_muted === null || coo_muted === 'null') coo_muted = i_am_guru ? all_muted : this_is_guru ? all_muted: true;
-	//or all allowed
 	if (coo_muted === null || coo_muted === 'null') coo_muted = all_muted;
-	//or only guru can hear others
-	//if (coo_muted === null || coo_muted === 'null') coo_muted = (i_am_guru || this_is_unmuted) ? all_muted : true;
-	
-	// (mode == 'm' || check_iOS()) coo_muted = true; // ios stupid block video unless sound off
-	// if (mode == 'm' || check_iOS() || isAndroid) coo_muted = true; //?! better all smart phones/tablets muted on default in cinema
+
 	if (mode == 'm' || mode == 'c' || mode == 'p') coo_muted = true; // ?!
-	// coo_muted = true; // serpom po mandarinam
 	
 	var coo_volume = loadData(name+'_volume');
 
@@ -142,10 +125,6 @@ function Participant(name, myname, mode, myrole) {
 		saveData(name+'_volume', coo_volume, 1440);
 	}
 
-	//switch off microphone if all_muted
-	//if ((i_am_muted === null || i_am_muted === 'null') && name == myname) i_am_muted = (all_muted === true || all_muted === 'true') ? true  : false;
-
-	//?! the same as above, but brute force
 	if ((all_muted === true || all_muted === 'true') && name == myname) i_am_muted = true;
 	
 	if (name == myname) saveData(myname+'_muted', i_am_muted, 1440);
@@ -153,19 +132,16 @@ function Participant(name, myname, mode, myrole) {
 	var container = document.createElement('div');
 	
 	container.className = PARTICIPANT_MAIN_CLASS;
-	//special case
+
 	container.className = (pcounter == 0 && !small_device) ? PARTICIPANT_SOLO : container.className;
 	container.className = (pcounter == 1 && !small_device) ? PARTICIPANT_DUO : container.className;
 	container.className = (pcounter == 2 && !small_device) ? PARTICIPANT_TRIO : container.className;
 	container.className = (pcounter == 3 && !small_device) ? PARTICIPANT_CUATRO : container.className;
 	container.className = (pcounter == 4 && !small_device) ? PARTICIPANT_CINCO : container.className;
 	
-	//need this trick because new participant breaks the row and appears underneath it -- make it appear after 0.5 sec delay in onNewParticipant and at once in onExistingParticipants
 	container.style.display='none';
 	container.style.pointerEvents='auto';
 	container.style.opacity=0;
-	//container.style.marginLeft='1px';
-	//container.style.marginRight='1px';
 	
 	i_am_guest = isPresentMainParticipant() & pcounter === 1 ? 1 : i_am_guest;
 
@@ -231,10 +207,9 @@ function Participant(name, myname, mode, myrole) {
 	var onemode = document.createElement('div');
 	var dropper = document.createElement('div');
 	var rtcPeer;
-///iOS 15.7 works with canvas
+
 	var canvas = document.createElement('canvas');
-	//canvas.width = screen.width;
-	//canvas.height = Math.round(0.67 * screen.width);
+
 	var ctx = canvas.getContext('2d');
 
 	document.id('participants').appendChild(container);
@@ -242,9 +217,7 @@ function Participant(name, myname, mode, myrole) {
 	container.appendChild(video);
 	container.appendChild(span);
 	container.appendChild(speaker);
-	
-	//container.onclick = switchContainerClass;
-	//if (name == myname) container.onclick = shareSomeStream ? do_grun : toggleRoomHeader;
+
 	if (name == myname) container.onclick = toggleRoomHeader;
 	container.ondblclick = rmPtcp;
 
@@ -320,8 +293,6 @@ function Participant(name, myname, mode, myrole) {
 	video.controls = check_iPad() && isSafari ? false : false;
 	video.volume = coo_volume;
 	if (name != myname) video.style.cursor = 'pointer';
-
-//console.log('name is', name);
 
 	if (ar[0] === "DUMMY") {
 	
@@ -418,12 +389,9 @@ function Participant(name, myname, mode, myrole) {
 	document.id(video.id).style.opacity = (i_am_muted === true || i_am_muted === 'true') && aonly && name == myname? 0 : 1;
 	document.id(video.id).style.maxHeight = (i_am_muted === true || i_am_muted === 'true') && aonly && name == myname ? notebook ? '310px' : '365px': document.id(video.id).style.maxHeight;
 	
-	
-	//if (pcounter > 1)  // bigger screen bad for notebooks
 	document.id(video.id).style.maxHeight = notebook ? '310px' : '365px';
 	
 	if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true') || name == myname) video.muted = true;
-	//if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true')) video.muted = true;
 	
 	if (video.muted !== true){
 		speaker.appendChild(document.createTextNode('\uD83D\uDD0A')); //speaker icon		
@@ -472,25 +440,17 @@ function Participant(name, myname, mode, myrole) {
 		let inte;
 		if (document.id('sndm_'+name)) {inte = setInterval(() => {
 
-    		//this is from https://www.webrtc-developers.com/how-to-know-if-my-microphone-works/
-    		// Compute the max volume level (-Infinity...0)
   		const fftBins = new Float32Array(analyzer.frequencyBinCount); // Number of values manipulated for each sample
   		analyzer.getFloatFrequencyData(fftBins);
-    		// audioPeakDB varies from -Infinity up to 0
+
   		const audioPeakDB = Math.max(...fftBins);
 
     		// Compute a wave (0...)
   		const frequencyRangeData = new Uint8Array(analyzer.frequencyBinCount);
   		analyzer.getByteFrequencyData(frequencyRangeData);
   		const sum = frequencyRangeData.reduce((p, c) => p + c, 0);
-    		// audioMeter varies from 0 to 10
+
   		const audioMeter = Math.sqrt(sum / frequencyRangeData.length);
-	  
-		// console.log('Here audioMeter', audioMeter, 'peakDB', audioPeakDB);  
-		//let cond1 = audioMeter > 0;
-		//let cond2 = audioPeakDB > -200;
-		//let cond3 = mic_muted;
-		// console.log('Here cond1', cond1, 'cond2',cond2, 'cond3',cond3);		  
 		  
 		  if (document.id('sndm_'+name)) {/*console.log('.. received',soundMeter.instant.toFixed(3));*/document.id('sndm_'+name).style.background = soundMeter.instant.toFixed(3) > 0.001 ? '#090' : 'transparent'; if (audioMeter === 0 && audioPeakDB < -200 && !mic_muted) { mic_muted = true; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);speaker.appendChild(document.createTextNode('X'));speaker.style.pointerEvents='none';} if (audioMeter > 0 && mic_muted) { mic_muted = false; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);if (!video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD0A'));if (video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD07'));speaker.style.pointerEvents='auto';}} else {clearInterval(inte)}
 		  
@@ -504,12 +464,6 @@ function Participant(name, myname, mode, myrole) {
 
 			if(!small_device) {document.id('room-header').style.display = document.id('room-header').style.display === 'none' ? 'block' : 'none'; let a = document.id('room-header').style.display === 'none' ? 0 : 1; document.id('room-header').fade(a); document.id('room-header-file').style.display = document.id('room-header').style.display === 'none' ? 'none' : document.id('room-header-file').style.display;}
 	}
-	/*
-	function do_grun() {
-		shareSomeStream = false;
-		grun();
-	}
-	*/
 	
 	function set_Anno() {
 				who_to = name;
@@ -527,7 +481,7 @@ function Participant(name, myname, mode, myrole) {
 				let mo =  g == 'c' ? false : true;
 				let tok = getCookie('authtoken') || '';
 				//setCookie('cinemaMode', mo);
-//console.log('saved cinema mode as', mo); 
+
 				let message = {
 					id : 'setCinema',
 					name : name,
@@ -574,7 +528,7 @@ function Participant(name, myname, mode, myrole) {
 				doSwitchOneMode(el,'5ENzTTUL3zvnMP8usRo3ZcGmMhkaHsvFUP6PMedLV9EWtLFx',5); //sorba
 			} else {
 				if (!afterBinding) {
-				   //acc_id.then(data => {
+
 					setTimeout(function() {
 						if (document.id('removerA')) {document.id('removerA').innerHTML = 'Error: Service unavailable';
 						(function() {document.id('removerA').fade(0)}).delay(1000);}
@@ -593,14 +547,11 @@ function Participant(name, myname, mode, myrole) {
 						}
 					}, 300000);
 					document.body.scrollTop = document.documentElement.scrollTop = 0;  
-				   //});
+
 				}
-				//document.id('phones').innerHTML = afterBinding ? '..PLEASE RE-ENTER..' : creatu;
-				//document.id('phones').fade(1); 
-				//(function(){if (afterBinding) location.reload();}).delay(500);
+
 				if (afterBinding) rejoin(); 
-				//(function(){document.id('phones').fade(0);}).delay(500);
-				//rejoin(); //?!
+
 			}
 		});
 
@@ -658,7 +609,7 @@ function Participant(name, myname, mode, myrole) {
 	function toggleFullScreen(el) {
 		
 		if (!el.fullscreenElement) {
-			//fullscreen = true; //uncomment for 'strict' chasing
+
 			el.requestFullscreen();
 			document.id('room_selector').fade(0);
 			
@@ -676,8 +627,6 @@ function Participant(name, myname, mode, myrole) {
 
 	function toggleBigScreen(el) {
 
-			
-			//if (!isAndroid) switchContainerClass();
 			if(!isAndroid && !ios_fullscreen) {
 				document.id('house').style.visibility='hidden';
 				document.id('controls').style.display='none';
@@ -786,20 +735,20 @@ function Participant(name, myname, mode, myrole) {
 			if (video.muted || (name == myname && playSomeMusic && playSomeMusic_muted === true )){
 				if (name != myname || (name == myname && playSomeMusic))  {
 					speaker.appendChild(document.createTextNode('\uD83D\uDD07'));//muted icon
-					//flashText('restart video to mute!');
+
 					if (name == myname && playSomeMusic) analyser.disconnect();
 				}
 				if (name == myname && !playSomeMusic) {
 					if (i_am_muted === true || i_am_muted === 'true') {
 						saveData(myname+'_muted', false, 1440); i_am_muted = false; 
 						setCookie('all_muted', false, 1440);// have to add this too
-						//flashText_and_rejoin('microphone ON!');
+
 						localStream.getAudioTracks()[0].enabled = true;
 						speaker.appendChild(document.createTextNode('\uD83C\uDFA4'));
 					} 
 					else {
 						saveData(myname+'_muted', true, 1440); i_am_muted = true;
-						//flashText_and_rejoin('microphone OFF!');
+
 						localStream.getAudioTracks()[0].enabled = false;
 						speaker.appendChild(document.createTextNode('X'));
 					}
@@ -810,21 +759,16 @@ function Participant(name, myname, mode, myrole) {
 				
 				if (name == myname && playSomeMusic) 
 				{
-					//flashText('restart video to listen!');
-					//if (audioContext === null) {
-//console.log('audioContext init2');
-						if (!g.audioContext) g.audioContext = new AudioContext();
-						mediaSource = g.audioContext.createMediaElementSource(video);
-						analyser = g.audioContext.createAnalyser();
-						mediaSource.connect(analyser);
-					//}
+					if (!g.audioContext) g.audioContext = new AudioContext();
+					mediaSource = g.audioContext.createMediaElementSource(video);
+					analyser = g.audioContext.createAnalyser();
+					mediaSource.connect(analyser);
+
 					analyser.connect(g.audioContext.destination);					
 				}
 			}
 		   }
 		}
-		//big speaker on attention
-		//if ((check_iOS() || isAndroid)&& this_is_guru) {speaker.style.fontSize='42px'; let d = container.getBoundingClientRect(); speaker.style.top = d.height-30; speaker.style.left=d.width-36;}
 	}
 
 	
@@ -1030,20 +974,10 @@ function CinemaGoer(name, myname, mode) {
 	slider.style.width='90px';
 		
 	container.appendChild(slider);
-	
-	/*var sndMeter = document.createElement('div');
-	sndMeter.className = 'snd_meters';
-	sndMeter.id = 'sndm_' + name;
-	sndMeter.style.zIndex = 10112;
 
-	container.appendChild(sndMeter);
-	*/
-	
-	//document.id(video.id).style.display = 'none';
 	speaker.style.display = 'none';
 	
 	if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true') || name == myname) video.muted = true;
-	//if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true')) video.muted = true;
 	
 	if (video.muted !== true){
 		speaker.appendChild(document.createTextNode('\uD83D\uDD0A')); //speaker icon
@@ -1068,9 +1002,6 @@ function CinemaGoer(name, myname, mode) {
 		let ac = new AudioContext();
 		console.log('newed ac2..');
 		let soundMeter = new SoundMeter(ac);
-					
-		//let fps = 10;
-		//let vidStream = video.mozCaptureStream ? video.mozCaptureStream(fps) : video.captureStream ? video.captureStream(fps) : null;
 
 		let vidStream = this.rtcPeer.getRemoteStream(); let audio = vidStream.getAudioTracks()[0];
 		

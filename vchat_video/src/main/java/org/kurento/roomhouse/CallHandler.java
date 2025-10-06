@@ -27,7 +27,7 @@
 #   GNU General Public License for more details.
  */
 
-package org.kurento.tutorial.groupcall;
+package org.kurento.roomhouse;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -45,8 +45,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-
-//import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
@@ -103,8 +101,6 @@ public class CallHandler extends TextWebSocketHandler {
     if (user != null) {
       log.debug("Incoming message from user '{}': {}", user.getName(), jsonMessage);
     } else {
-      //if (jsonMessage.get("token").getAsString().equals("")) 
-      	//log.info("Incoming message from new user: {}", jsonMessage);
     }
     
     switch (jsonMessage.get("id").getAsString()) {
@@ -117,10 +113,6 @@ public class CallHandler extends TextWebSocketHandler {
 
         	if (who != null) {
                 	if (user == null) {
-				//if you do correct, they would re-connect; hack and let them stay idle in goodConnection
-				//WebSocketSession sess = who.getSession();
-    				//UserSession us = registry.removeBySession(sess);
-                        	//leaveRoom(us);
 				leaveRoom(who);
                 	}
         	}
@@ -198,8 +190,7 @@ public class CallHandler extends TextWebSocketHandler {
 		if (user != null) {_role = user.getRole();}
 	
 		if (joinerRole.equals("3") && !role.equals("1") && _role.equals("3") && noSuchRoom.equals("0") ) { temporary = "1";}
-// now check if we're to let join
-// count number of participants
+// now check if we're to let join & count number of participants
                 Room roo = roomManager.getRoom(joinerRoom);
                 int cou = 0;
                 for (final UserSession participant : roo.getParticipants()) {
@@ -210,8 +201,6 @@ public class CallHandler extends TextWebSocketHandler {
 		if (room_limit == 2 && cou >= room_limit) { noSuchRoom = "1"; }
 		log.info("JOINER {}: SESSION {}, ROLE TOKEN {}, ROLE RECEIVED {}, ROOM STATUS {}, ROOM LIMIT {}", joinerName, session, role, joinerRole, sta, room_limit);
 		
-		// long time ago it was cool, but now I want to be able on connect breaks to keep guests in room if they are with videos
-		//if ( (sta.equals("1") && role.equals("0") && temporary.equals("0") && _role.equals("0")) || (!joinerRole.equals(role) && role.equals("0") && temporary.equals("0") && _role.equals("0")) || noSuchRoom.equals("1") ) {
 		if ( (sta.equals("1") && role.equals("0") && temporary.equals("0") && _role.equals("0")) || noSuchRoom.equals("1") ) {
 			log.info("ALARM1: joiner {} ", joinerName);
 		} else {
@@ -386,8 +375,7 @@ public class CallHandler extends TextWebSocketHandler {
                         	vi++;
                 	}
 			if ( co != 1) {an = ""; cu = "";} else {an = "\".."+an+"\"";}
-			
-			//log.info("ROOM {}: got {} participants, {} viewers", jRoom, co, vi);
+
 			synchronized (session) {
 				final JsonObject checkRoomJson = new JsonObject();	
     				checkRoomJson.addProperty("id", "roomConnection");
@@ -448,8 +436,7 @@ public class CallHandler extends TextWebSocketHandler {
     String country = "country";
     String city = "city";
     int num_guests = 0;
-    
-    //need this hack to avoid DB errors
+
     curip = curip.replaceAll("[;'\"]*", "");
 
     if (curip.equals("127.0.0.1") || curip.equals("") || isPrivateIP(curip)) {curip = "164.68.105.131";}
@@ -483,24 +470,6 @@ public class CallHandler extends TextWebSocketHandler {
         	curip = city + ", " + country;
 
     	} catch (final IOException e) {}
-        
-	//DB
-	// this piece of j*va displays a ton of compiler error - I don't know why, and I don't want to know. Life is too short, my friend.
-	/*
-	try (Connection con = DriverManager.getConnection(pgurl, pguser, pgpass);
-		PreparedStatement st = con.prepareStatement("INSERT INTO JOINS (IPADDR, COUNTRY, CITY, NAME, ROOM, MODE, ROLE, DTM) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)");
-		st.setString(1, ipAddress);
-		st.setString(2, country);
-		st.setString(3, city);
-		st.setString(4, name);
-		st.setString(5, roomName);
-		st.setString(6, mode);
-		st.setString(7, role);
-		
-		st.executeUpdate();
-		st.close();
-		) {} catch (SQLException ex) {log.debug("PG insert err from {}: ", name);}
-	*/
 	  	
 		//protect against sql injection
 		name = name.replaceAll("[;'\"]*", ""); 
@@ -512,16 +481,11 @@ public class CallHandler extends TextWebSocketHandler {
 		if (country != null) { country = country.replaceAll("[;'\"]*", ""); }
 		if (acc_id != null) { acc_id = acc_id.replaceAll("[;'\"]*", ""); }
 		currRoom = currRoom.replaceAll("[;'\"]*", "");
-
-//create table joins (id serial, ipaddr text, country text, city text, name text, house text, room text, mode text, role text, dtm timestamp, accid text);
-//insert
-// alter table joins add column currRoom char default null;		
+	
 		try (Connection con = DriverManager.getConnection(pgurl, pguser, pgpass);
                 Statement st = con.createStatement();
 		ResultSet rs = st.executeQuery("INSERT INTO JOINS (IPADDR, COUNTRY, CITY, NAME, HOUSE, ROOM, MODE, ROLE, DTM, ACCID, CURRROOM) VALUES ('" + ipAddress.getHostAddress() + "','" + country + "','" + city + "','" + name + "','" + houseName + "','" + roomName + "','" + mode + "','" + role + "', current_timestamp, '" + acc_id + "','" + currRoom + "')")) {
          	} catch (SQLException ex) {log.info("PG join err4 from {}: ", name);}
-
-//get daily stats
 
 	  	try (Connection con = DriverManager.getConnection(pgurl, pguser, pgpass);
                 Statement st = con.createStatement();
@@ -634,10 +598,6 @@ public class CallHandler extends TextWebSocketHandler {
     final UserSession who = registry.getByName(n);
     if (who != null) {
 		who.setRole("0");
-		//if you do correct, they would re-connect; hack and let them stay idle in goodConnection
-		//WebSocketSession sess = who.getSession();
-    		//UserSession us = registry.removeBySession(sess);
-		//leaveRoom(us);
 		leaveRoom(who);
 	    }    
     log.info("GURU {}: trying to drop {} viewer!", user.getName(), n);
@@ -659,12 +619,10 @@ public class CallHandler extends TextWebSocketHandler {
 
   private void checkConn(UserSession user) throws IOException {
     final Room room = roomManager.getRoom(user.getRoomName());
-    //log.info("SOMEONE {}: checking connection", user.getName());
     room.check_conn(user);
   }
   private void replyPing(UserSession user) throws IOException {
     final Room room = roomManager.getRoom(user.getRoomName());
-    //log.info("SOMEONE {}: replying ping", user.getName());
     room.reply_ping(user);
   }
   private void requestMovie(UserSession user, JsonObject params) throws IOException {
@@ -687,12 +645,7 @@ public class CallHandler extends TextWebSocketHandler {
     	log.info("SOMEONE {}: denying for {} viewers", user.getName(), vie);    
     }
   }
-/*  
-  private boolean matches(String ip, String subnet) {
-    IpAddressMatcher ipAddressMatcher = new IpAddressMatcher(subnet);
-    return ipAddressMatcher.matches(ip);
-  }
-*/
+
   public boolean isPrivateIP(String ipAddress) {
         boolean isValid = false;
 
