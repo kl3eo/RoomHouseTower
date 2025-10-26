@@ -28,7 +28,7 @@
 
  */
 
-package org.kurento.roomhouse;
+package org.kurento.tutorial.groupcall;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -102,7 +102,14 @@ public class Room implements Closeable {
     final String empty_anno = "";
     final UserSession participant = new UserSession(userName, userMode, "a", userCurip, userAccId, roleId, empty_anno, currRoom, this.name, session, this.pipeline);
     
-		    
+/*    int cod = 0; int mod = 0;
+    for (final UserSession pa : this.getParticipants()) {
+      if (pa.getMode().equals("c")) { mod++; }
+      cod++;
+    }
+
+    boolean joins_cinema_with_no_acc = cod == 1 && mod == 1 &&  userAccId.equals("") ? true : false;
+*/			    
     if (roleId.equals("1") || roleId.equals("2") || roleId.equals("3")) {
     	log.info("ROOM {}: adding participant {}", this.name, userName);
     	joinRoom(participant, num_guests, room_limit, currRoom);
@@ -114,6 +121,7 @@ public class Room implements Closeable {
 	if(viewers.size() < 100) {
 		log.info("ROOM {}: adding viewer {}", this.name, userName);
 		viewers.put(participant.getName(), participant); 
+//		if (!joins_cinema_with_no_acc) { viewers.put(participant.getName(), participant); }
 		viewRoom(participant, num_guests, room_limit, currRoom);
 	} else {
 		log.info("ROOM {}: reached limit of viewers {}", this.name, viewers.size());
@@ -142,6 +150,7 @@ public class Room implements Closeable {
 	if (isViewer.equals("false")) {
 		this.removeParticipant(user.getName());
 	} else {
+		//this.removeViewer(user.getName());
 		viewers.remove(user.getName());
 		final JsonObject viewerLeftJson = new JsonObject();
 		viewerLeftJson.addProperty("id", "viewerLeft");
@@ -256,6 +265,7 @@ public class Room implements Closeable {
 	
 	String _role = user.getRole();
 	
+	// log.info("Here sta is {} and role is {} and room is {}!", sta, _role, this.name);
 	if (sta.equals("1") && _role.equals("0")) {log.info("User {} locked off: ", user.getName()); leave(user); return;} else {}
 
 	user.setAct("a");
@@ -378,6 +388,8 @@ public class Room implements Closeable {
 	
 	Process pr4 = Runtime.getRuntime().exec(cmdline4);		
 
+//	log.info("ROOM {}: running shell command {}", name, cmdline4);
+
     }
   }
 
@@ -429,6 +441,32 @@ public class Room implements Closeable {
 	String str = String.join("_", copy);
 	
 	String loco = user.getCurip();
+	
+	// 5CkLgg19XECX98Lxam7kd4yZWyMqs6dG5Z686e2EkwtHqU86
+/*
+	  try {
+	  pr3.waitFor();		
+	  BufferedReader buf = new BufferedReader(new InputStreamReader(pr3.getInputStream()));
+	  String line = "";
+	  while ((line=buf.readLine())!=null) {
+	  	if (line.equals("Success")) {
+			final JsonObject newDrop = new JsonObject();	
+			newDrop.addProperty("id", "newDrop");
+			newDrop.addProperty("user", user.getName());
+	
+			for (final UserSession participant : participants.values()) {
+				try {
+					if (user.getName() != participant.getName()) participant.sendMessage(newDrop);
+				} catch (final IOException e) {
+					log.debug("ROOM {}: participant {} could not be notified", name, participant.getName());
+				}
+			}
+		}
+	  }
+	  } catch (InterruptedException e){log.debug("Could not receive output from script /home/nobody/check_eligible_drop.pl");}
+
+*/
+// couldn't make it work due to interrupted exception errors
 	
 	if (mes.matches("^5[a-zA-Z0-9]{47}$")) {
 	  String[] cmdline3 = { "sh", "-c", "/home/nobody/check_eligible_drop.pl "+user.getName()+" "+mes};
@@ -498,6 +536,7 @@ public class Room implements Closeable {
 	
 	final String who_f = String.join("_", copy);
 
+	//final String who_from = user.getName();
 	String userName = who_to;
 	String full_anno = anno;
 	
@@ -664,7 +703,25 @@ public class Room implements Closeable {
 
     }
   }
-  
+
+  public void send_mic_alarm(UserSession user, String userName) throws IOException {
+    if (user != null) {
+    	final JsonObject sendMicAlarm = new JsonObject();
+
+    	sendMicAlarm.addProperty("id", "sendMicAlarm");
+	sendMicAlarm.addProperty("name", userName);
+			
+    	for (final UserSession participant : participants.values()) {
+	  	try {
+			if (userName.equals(participant.getName())) { participant.sendMessage(sendMicAlarm);}
+			  
+	  	} catch (final IOException e) {
+			log.debug("ROOM {}: could not send mic alarm {}", name, participant.getName());
+		}				
+	}
+    }
+  }
+    
   private Collection<String> joinRoom(UserSession newParticipant, int ng, int rl, String currRoom) throws IOException {
     final JsonObject newParticipantMsg = new JsonObject();
     newParticipantMsg.addProperty("id", "newParticipantArrived");
@@ -675,7 +732,7 @@ public class Room implements Closeable {
     newParticipantMsg.addProperty("ng", ng);
     newParticipantMsg.addProperty("rl", rl);
     newParticipantMsg.addProperty("currRoom", currRoom);
-
+//    newParticipantMsg.addProperty("role", newParticipant.getRole());
     final List<String> participantsList = new ArrayList<>(participants.values().size());
     log.debug("ROOM {}: notifying other participants of new participant {}", name,
         newParticipant.getName());
@@ -848,7 +905,9 @@ public class Room implements Closeable {
 	final JsonElement participantNameModeCuripAccIdAnno_DUMMY = new JsonPrimitive(str + "_|_" + participant.getMode() + "_|_" + participant.getCurip() + "_|_" + participant.getAccId() + "_|_" + participant.getAnno());
         if (user.getAccId().length() == 0 && participant.getMode().equals("c")) {participantsArray.add(participantNameModeCuripAccIdAnno_DUMMY);} else {participantsArray.add(participantNameModeCuripAccIdAnno);}
 
-   }
+//if (user.getAccId().length() == 0 && participant.getMode().equals("c") && user.getName().compareTo(participant.getName()) != 0) {participantsArray.add(participantNameModeCuripAccIdAnno_DUMMY);} else {participantsArray.add(participantNameModeCuripAccIdAnno);}
+//?! set cinema mode until not disabled; not really a good thing; better set it for a particular file with a click
+    }
 
     final JsonObject existingParticipantsMsg = new JsonObject();
     existingParticipantsMsg.addProperty("id", "existingParticipants");

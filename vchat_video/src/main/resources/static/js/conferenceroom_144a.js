@@ -108,11 +108,13 @@ const wi_hq = 1280;
 const sp_setter_url = "https://coins2.room-house.com";
 const sp_container_url = "https://coins1.room-house.com";
 const sm_url = "https://slotmachine.room-house.com";
-
+//const poker_url = "https://room-house.com/poker/";
 const poker_url = "https://poker.room-house.com";
 const chess_url = "https://chess.room-house.com";
 const air_url = "https://bot.skypirl.net";
 const swap_url = "https://coins.room-house.com";
+
+//const role  = 0; // debug
 
 const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window != window.top ? true : false;
 const tablet = small_device && screen.width >= 960 ? true : false;
@@ -155,6 +157,13 @@ window.onload = function(){
        if (registered || problems) setTimeout(function() {check_connection()}, 1000); // give more time here to avoid early exits;
 
    }, 30000 + Math.random() * 10000);
+   
+   // idiotic check
+   /*setInterval(function(){
+       
+       if (registered) check_fullscreen();
+
+   }, 1000);*/
    
 	let loneGuy = getCookie('loneGuy') || 0;
 		
@@ -217,6 +226,9 @@ window.onload = function(){
                 	item.innerHTML = go;
         	});
 		
+		//let he = he_.get(altlang[ctr]);
+		//document.id('helpcapo').innerHTML = he;
+		
 	}
 	
 	document.id('helplink').href = ctr == 1 ? 'https://github.com/kl3eo/room-house/blob/main/R-H_manual_RUS.pdf' : 'https://github.com/kl3eo/room-house/blob/main/R-H_manual_ENG.pdf';
@@ -277,6 +289,9 @@ ws.onmessage = function(message) {
 	case 'setCinema':
 		setCinema(parsedMessage);
 		break;
+	case 'sendMicAlarm':
+		sendMicAlarm(parsedMessage);
+		break;
 	case 'goodConnection':
 		connection_is_good = 1;
 		roomees_str = parsedMessage.roomees;
@@ -326,7 +341,8 @@ ws.onmessage = function(message) {
 
 if (isAndroid) {
 screen.orientation.onchange = function (){
-
+    // logs 'portrait' or 'landscape'
+    //console.log(screen.orientation.type.match(/\w+/)[0]);
     if (document.id('viewer_menu')) document.id('viewer_menu').setStyles({'opacity': 0,'zIndex': 0});
     let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
     let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
@@ -401,6 +417,7 @@ function eventHandler(n) {
 
 		var message={id :'keyDown', num: n}; 
 		sendMessage(message);
+		//console.log('key down!', n);
 }
 
 function leftHandler(e) {
@@ -512,6 +529,9 @@ const register = () => {
 				case 'setCinema':
 					setCinema(parsedMessage);
 					break;
+				case 'sendMicAlarm':
+					sendMicAlarm(parsedMessage);
+					break;
 				case 'goodConnection':
 					connection_is_good = 1;
 					roomees_str = parsedMessage.roomees;
@@ -571,7 +591,7 @@ const register = () => {
 		fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
  
 			let role = respo || 0;
-
+//console.log('registering as dummy guest, after fetch');
 			register_body(role);
 			i_am_dummy_guest = false; //only one time is enough?! 
 		
@@ -672,16 +692,21 @@ const register_body = (ro) => {
 		let tok = getCookie('authtoken') || '';
 		
 		if (ro == 0 && hack) role = 1;
+	
+	// NB: this is a very bad approach
+	// if (document.id('house') && !small_device) {document.id('house').style.minWidth='1000px';}
 
+// console.log('registering, mode is' ,mode, 'role is', role, 'name is', name);
 		let formData = new FormData();
 		formData.append('addr', curip);
 		
+		//fetch('https://'+window.location.hostname+':'+port+'/cgi/genc/checker.pl', {body: formData, method: 'post', credentials: 'include'}).then(respo => respo.text()).then((respo) => {
 		fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {body: formData, method: 'post', credentials: 'include'}).then(respo => respo.text()).then((respo) => {
 			let role = respo || 0;
 		}).catch(err => console.log(err));
 	
 		request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data=>{
-
+//console.log('reg: acc_id is', data);
 		   let message = {
 			id : 'joinRoom',
 			name : name,
@@ -697,7 +722,9 @@ const register_body = (ro) => {
 	
 		   sendMessage(message);		
 		});
-
+/*
+console.log('here token', tok,'val',document.id('asender').value,'name',document.id('name').value)
+*/
  		if (problems) {
 			document.id('phones').style.paddingTop = small_device ? '39vh' : '45vh'; document.id('phones').style.lineHeight = '36px'; document.id('phones').innerHTML = warning;
 			(function() { document.id('phones').fade(1)}).delay(500);
@@ -870,14 +897,16 @@ const onNewParticipant = (request) => {
 		
 		if (small_device || tablet) {
 		 // new guy
-		 document.id('participants').style.marginTop = '-68vh';
-		 if (small_device && pcounter === 0) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
+		 document.id('participants').style.top='-68vh';
+		 /*if (small_device && pcounter === 0) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
 		 if (small_device && pcounter === 1) document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';
 		 if (small_device && pcounter === 2) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
 		 if (small_device && pcounter === 3) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
 		 if (small_device && pcounter > 3) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
-
+		 */
 		}
+		
+// console.log('name:', request.name, 'mode:', request.mode, 'myrole:', myrole);
 	   	
 		receiveVideo(request.name, request.mode, myrole);
 		
@@ -905,7 +934,7 @@ const onNewParticipant = (request) => {
 			document.id('loco_'+request.name).style.display='block';
 			document.id('loco_'+request.name).fade(1);			
 		}
-
+// console.log('cine:', cine, 'role', role);
 		if (cine && role != 1) {
 			(function() {document.id('loco_' + request.name).fade(0);document.id('span_' + request.name).fade(0);}).delay(2000);
 		}
@@ -947,17 +976,18 @@ const onNewParticipant = (request) => {
 }
 
 function receiveVideoResponse(result) {
-
+	//console.log('receiving response for', result.name);
 	if (participants[result.name]) {participants[result.name].rtcPeer.processAnswer (result.sdpAnswer, function (error) {
 		if (error) return console.error (error);
 	})
-
+	//console.log('receiving response for participant', result.name);
 	}
 	else {
-	 if (cinemaGoers[result.name]) {cinemaGoers[result.name].rtcPeer.processAnswer (result.sdpAnswer, function (error) {
+	if (cinemaGoers[result.name]) {cinemaGoers[result.name].rtcPeer.processAnswer (result.sdpAnswer, function (error) {
 		if (error) return console.error (error);
-	 })
-	 }
+	})
+	}
+	//console.log('receiving response for cinema goer', result.name);
 	}	
 }
 
@@ -1040,6 +1070,8 @@ const onExistingViewers = (msg) => {
 		
 			receiveCGAudio(f, 'a');
 
+
+
 			let x = document.id('video-' + f) && document.id('video-' + f).muted == true && myname != f ? 'X' : '';
 			x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 			x = document.id('video-' + f) ? x : '';
@@ -1085,6 +1117,7 @@ const onExistingViewers = (msg) => {
                   		startVideo(g.video);
                   		this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
 				localStream = cinemaGoer.rtcPeer.getLocalStream();
+				//console.log('local stream', localStream)
 
 				x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 
@@ -1092,7 +1125,9 @@ const onExistingViewers = (msg) => {
 		  	   }
          		});		
 		}
-
+		
+		//setting volume
+		// let vi = 'video-' + f;
 		let coo_volume = loadData(f+'_volume');
 		if (document.id('slider_' + f)) document.id('slider_' + f).value = coo_volume;
 		if (document.id('video-' + f)) document.id('video-' + f).volume = coo_volume;
@@ -1172,7 +1207,15 @@ function drop_guest(who) {
 		
 	}).catch(err => console.log(err));
 }
-	
+/*
+function isMicrophoneAllowed(){
+    navigator.permissions.query({
+        name: 'microphone'
+    }).then(function(permissionStatus){
+        return permissionStatus.state !== 'denied';
+    });
+}
+*/	
 const onExistingParticipants = (msg) => {
 //sets up every video in the room I just joined
 
@@ -1184,7 +1227,8 @@ const onExistingParticipants = (msg) => {
 
    if (msg.num_rooms) num_rooms = msg.num_rooms;
    if (msg.roomees) roomees_str = msg.roomees;
-  
+   // console.log('num_rooms', num_rooms);
+   
    let room_sel = ''; var sym = 'A';
    roomees_str = roomees_str ? roomees_str : 'room1;room2;room3;room4;room5;room6';
    let roomees_arr = roomees_str ? roomees_str.split(';') : [];
@@ -1223,10 +1267,12 @@ all_muted = getCookie('all_muted');
 if (all_muted === true || all_muted === 'true') i_am_muted = true;
 
 	let mode = (i_am_muted === true || i_am_muted === 'true') ? 'm' : aonly ? 'a' : 'v';
+// console.log('Creating participant with name', name, 'myname', myname);	
 	var participant = new Participant(name, myname, mode, role);
 	participants[name] = participant;
 	
 	g.video = recordedVideo ?  recordedVideo : participant.getVideoElement();
+// console.log('..and video is', g.video);
 	
 	var canvas = check_iOS() ? participant.getCanvasElement() : '';
 
@@ -1398,13 +1444,14 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 		}).catch(function(err){console.log(err.name + ": " + err.message);}); //mediaStream
 		}).catch(e => console.log(e)); //startCapture
    
+	//} else if (playSomeMusic && (role == 1|| role == 2)) {
 	} else if (playSomeMusic) {
 		// with sound both in the stream and in the local video. 
 		// initialize the audioContext
 		
 		if (playSomeMusic_muted === false) {
 			if (!g.audioContext) g.audioContext = new AudioContext();
-
+//console.log('audioContext init1');
 			mediaSource = g.audioContext.createMediaElementSource(g.video);
 			analyser = g.audioContext.createAnalyser();
 			mediaSource.connect(analyser);
@@ -1420,9 +1467,10 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 		g.video.src = selectedFile ? selectedFile : null;
 		g.video.muted = false;
 
+		// get name of the file played - hack ash
 
 		let cT = curMovie ? getCookie('cT_'+curMovie) : 0;
-
+//console.log('Setting cT as', cT, 'for curMovie name ', curMovie);
 		g.video.currentTime = cT > 0 ? cT : 0;
 	
 		g.video.addEventListener('canplay', (event) => {
@@ -1517,7 +1565,7 @@ console.log('doing mic mix in normal mode');
 			  	}
 			  	return false;
                   	 } else {
-
+                  	  	//startVideo(video);
                   	  	g.video.play();
 
 				if (playSomeMusic_muted === false) {
@@ -1547,7 +1595,9 @@ console.log('doing mic mix in normal mode');
 
 //console.log('setting myself in existingPart as aonly', aonly, 'i_am_muted', i_am_muted, 'options', options, 'options_alt', options_alt);
 
-         	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
+         	if (small_device)  document.id(myname).style.float = 'none';
+		
+		participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                   if(error) {
 			var ff = new RegExp('closed','ig');
 			if (error.toString().match(ff)) {
@@ -1562,7 +1612,7 @@ console.log('doing mic mix in normal mode');
                                         this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 					localStream = participant.rtcPeer.getLocalStream();
 					
-					if (small_device)  document.id(myname).style.float = 'none';
+					//if (small_device)  document.id(myname).style.float = 'none';
                           });
 			}
 
@@ -1576,9 +1626,9 @@ console.log('doing mic mix in normal mode');
 			
 			if (small_device || tablet) {
 				// myself
-				document.id('participants').style.marginTop = isIOSFirefox() ? '-46vh' : '-55vh';
-				
-				if (pcounter === 1) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
+				//document.id('participants').style.marginTop = isIOSFirefox() ? '-46vh' : '-55vh';
+				document.id('participants').style.top='-68vh';
+				/*if (pcounter === 1) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
 				if (pcounter === 2) document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';
 				if (pcounter === 3) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
 				if (pcounter === 4) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
@@ -1594,6 +1644,7 @@ console.log('doing mic mix in normal mode');
 					document.id('participants').style.position = 'relative';
 					document.id('participants').style.top = saved_top.length ? saved_top : document.id('participants').style.top ;
 				}
+				*/
 			}
 			
 			if (!small_device && window == window.top) resizer(1);
@@ -1619,7 +1670,8 @@ console.log('doing mic mix in normal mode');
 		let t = chu[2];
 		let ac = chu[3];
 		let a = chu[4];
-	
+
+//console.log('here f is', f, 's is', s, 'a', a);		
 		let na = chu[0].split('_');
 		
 		if (s === 'c') {cinemaEnabled = true; num_cinemas += 1;}
@@ -1690,7 +1742,8 @@ console.log('doing mic mix in normal mode');
 			}
 			if (document.id('sp_container' && sp_shown) && document.id('sp_container').style.display != 'block') document.id('acco_' + f).style.visibility='hidden';			
 		}	
-
+		
+		//if (document.id('anno_' + f) && ValidateAnno(a)) {
 		if (document.id('anno_' + f)) {
 			//console.log("For:", f, "anno:", a);
 			let arra = a.split('@#%');
@@ -1700,7 +1753,7 @@ console.log('doing mic mix in normal mode');
 				let cs = arra[1] || 0;
 				let arr = [];
 				let buf = arra[0].substring(2,arra[0].length-2);
-
+				//console.log('buf is', buf)
 				arr = buf.split('","');
 				curSelInd = cs
 				let fi = arr[curSelInd];
@@ -1731,15 +1784,30 @@ console.log('doing mic mix in normal mode');
 			setTimeout(function() {if (document.id('one-' + f)) document.id('one-' + f).fade(0.5);}, 3000);
 			document.id('room-header').fade(0);		
 		}
-
+		
+		/*if (document.id('lol_' + f) && a.length && s === 'p' && window.top == window && !small_device) {
+		
+			document.id('lol_' + f).innerHTML = 'STOP/PLAY';
+			document.id('lol_' + f).style.display='block';			
+			document.id('lol_' + f).fade(1);
+			document.id('rew_' + f).innerHTML = '<< -10s';
+			document.id('rew_' + f).style.display='block';			
+			document.id('rew_' + f).fade(1);
+		}*/
+		
+		// disabled user controls for now --ash oct'23
 	   } //for
 	   if (small_device || tablet) {
 			// other guys
-			document.id('participants').style.marginTop = '-68vh';
+			
+			document.id('participants').style.top='-68vh';
+			//alert(document.id('participants').style.marginTop);
+			/*
 			if (pcounter === 2) {document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';}
 			if (pcounter === 3) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
 			if (pcounter === 4) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
-			if (pcounter > 4) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';			
+			if (pcounter > 4) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
+			*/		
 
 	   }
    } // msg.data
@@ -1754,7 +1822,8 @@ console.log('doing mic mix in normal mode');
      	document.id('sp_container').style.display = 'none';document.id('sp_balance').style.display='none';
      }
    });
-
+   	     
+//  }).catch(err => console.log(err)); //fetch
 } // onExistingP
 
 function copy(that){
@@ -1802,12 +1871,13 @@ const leaveRoom = () => {
 				delete cinemaGoers[key];
 		}
 	}
-
+	//delete g.ctx;
 	delete g.mixStream;
 	delete g.video;
 	delete g.captureStreamVideoTrack;
 	delete g.captureStreamAudioTrack;
-
+	//delete g.audioContext;
+	
 	pcounter = 0;
 	vcounter = 0;
 	i_am_guest = 0;
@@ -1821,6 +1891,8 @@ const leaveRoom = () => {
 }
 
 const receiveVideo = (sender, mode, role) => {
+
+// console.log('in receiveVideo1, mode', mode,'role', role, 'name', sender);
 	
 	var participant = new Participant(sender, document.id('name').value, mode, role);
 	participants[sender] = participant;
@@ -1854,6 +1926,7 @@ const receiveVideo = (sender, mode, role) => {
 	}
 	
 	options = mode === 'a' ? options_aonly : options;
+// console.log('in receiveVideo2, options', options);
 	
 	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
 	function (error) {
@@ -1863,11 +1936,13 @@ const receiveVideo = (sender, mode, role) => {
 
 			startVideo(g.video);
 			this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+			// remoteStream = participant.rtcPeer.getRemoteStream();console.log('Here remoteStream', remoteStream);
 			
 			if (small_device)  {
 				document.id(sender).style.float = 'none';
 				document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
 			}
+			//if (!cine) participant.activateMicIndic();
 
 	});
 
@@ -1891,6 +1966,8 @@ const receiveCGAudio = (sender, mode) => {
 		mediaConstraints: constraints,
 		onicecandidate: cinemaGoer.onIceCandidate.bind(cinemaGoer)
 	}
+	
+console.log('receiveCGAudio for', sender, 'options are', options);	
 
 	cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
 	function (error) {
@@ -1900,6 +1977,9 @@ const receiveCGAudio = (sender, mode) => {
 
 			startVideo(g.video);
 			this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
+			
+			//remoteStream = cinemaGoer.rtcPeer.getRemoteStream();
+			//if (cine) cinemaGoer.activateMicIndic();
 	});
 
 	if (cine) (function() {cinemaGoer.activateMicIndic()}).delay(3000);
@@ -1958,6 +2038,7 @@ const setGuru = (request) => {
 			i_am_viewer = true;
 			flashText_and_rejoin('AUDIO-ONLY');
 		}
+//	}).catch(err => console.log(err));
 }
 
 function askGuru(request) {
@@ -1978,12 +2059,16 @@ function askGuru(request) {
 	
 	document.id('audience_boxx').innerHTML = audi;
 	document.id('au_'+suf).setStyles({'color':'#faa'});
-	let role = respo || 0;
 
-	soundEffect.src = "/sounds/wood_" + window.location.hostname+port + ".mp3";
-	chat_shown = 0; document.id('logger').click();
-	document.id('message_box').style.display = 'none';
-	document.id('audience_box').style.display = 'table';
+	//fetch('https://'+window.location.hostname+':'+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
+	//	let role = respo || 0;
+		//if (role == 1 || request.name == document.id('name').value) {
+			soundEffect.src = "/sounds/wood_" + window.location.hostname+port + ".mp3";
+			chat_shown = 0; document.id('logger').click();
+			document.id('message_box').style.display = 'none';
+			document.id('audience_box').style.display = 'table';
+		//}
+	//}).catch(err => console.log(err));
 
 }
 
@@ -1991,7 +2076,7 @@ const setCinema = (request) => {
 
 	let myname = document.id('name').value;
 	fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
-	
+//console.log('here req is', request, 'myname', myname);
 		let myrole = respo || 0;
 
 		let m = request.mode;
@@ -2015,8 +2100,20 @@ const setCinema = (request) => {
 		
 
 		cinemaEnabled = m == 'c' ? true : num_cinemas ? cinemaEnabled : false;
+//console.log('num_cinemas', num_cinemas, 'enabled', cinemaEnabled);
 
 	}).catch(err => console.log(err));	
+}
+
+const sendMicAlarm = (request) => {
+
+	if (request.name !== document.id('name').value) { 
+		 return;
+	}
+		
+	flashText('Please check microphone!');
+	soundEffect.src = "/sounds/please_check_mic.mp3";
+	
 }
 
 function newChatMessage() {
@@ -2030,7 +2127,7 @@ function newChatMessage() {
 }
 
 function setAnno(request) {
-
+//console.log("setting anno:", request.participant, "anno:",request.anno);
 	let arra = request.anno.split('@#%');
 	if (arra.length == 2) {
 		
@@ -2061,7 +2158,8 @@ function setAnno(request) {
 	
 	document.id('anno_' + request.participant).style.display='block';			
 	document.id('anno_' + request.participant).fade(1); /*if (cine) setTimeout(function() {document.id('anno_' + request.participant).fade(0.02);}, 2000);*/
-
+		 
+	//setTimeout(function() {const boxes = document.querySelectorAll('.annos'); boxes.forEach(box => {box.style.opacity = 0.02;});}, 3000);
 	document.id('room-header').fade(0);	
 }
 
@@ -2075,9 +2173,10 @@ function handleFileSelectChange(v) {
 			if (selectedFile) URL.revokeObjectURL(selectedFile);
 			selectedFile = URL.createObjectURL(fis[i]);
 			setCookie('cT_'+curMoviesList[0], document.id('video-'+document.id('name').value).currentTime, 14400);
-
+//console.log('saving cT as', document.id('video-'+document.id('name').value).currentTime, 'for movie', curMoviesList[0]);
 			curSelInd = i;
-			curMovie = v;			
+			curMovie = v;
+//console.log('Saved curMovie as', v);			
 			rejoin();
 			break;
 		}
@@ -2094,13 +2193,13 @@ function toggleOpacity(el) {
 }
 
 function setMoviesList(request) {
-
+//console.log("setting movies list:", request.participant, "ml:",request.ml, "curSelInd", curSelInd);
 	if (document.id('anno_' + request.participant)) {
 		
 		document.id('anno_' + request.participant).innerHTML = "<select id='selector_" + request.participant + "' onchange='handleFileSelectChange(this.options[this.selectedIndex].text)' onmouseover='toggleOpacity(this.parentNode)' onmouseout='toggleOpacity(this.parentNode)'></select>";
 		let arra = [];
 		let buf = request.ml.substring(2,request.ml.length-2);
-
+		//console.log('buf is', buf)
 		arra = buf.split('","');
 		
 		curSelInd = request.cs
@@ -2153,9 +2252,15 @@ function bongoKey(request) {
 	let a = '';
 	let myname = document.id('name').value;
 	let myvideo = 'video-' + myname;
-
+	
+	//let video_controlable = request.name === myname || request.name === '' ? true : false;
 	let video_controlable = true;
+	
+	/*if (request.num == '65') {
+		soundEffect.src = "/sounds/track01.mp3";
+		a = 'a';
 
+	}*/
 	
 	if (request.num == '66') {
 		soundEffect.src = "/sounds/track02.mp3";
@@ -2173,21 +2278,73 @@ function bongoKey(request) {
 		a = 'd';
 		if (now_playing && video_controlable) {document.id(myvideo).currentTime += 300;document.id(myvideo).play();__playing = true;}
 	}
+	/*if (request.num == '69') {
+		soundEffect.src = "/sounds/track05.mp3";
+		a = 'e';
 
+	}*/
 	if (request.num == '70') {
 		//soundEffect.src = "/sounds/track06.mp3";
 		a = 'f';
 		if (now_playing && video_controlable) {document.id(myvideo).currentTime += 10;document.id(myvideo).play();__playing = true;}
 
 	}
+	/*if (request.num == '71') {
+		soundEffect.src = "/sounds/track07.mp3";
+		a = 'g';
 
+	}
+	if (request.num == '72') {
+		soundEffect.src = "/sounds/track08.mp3";
+		a = 'h';
+
+	}
+	if (request.num == '73') {
+		soundEffect.src = "/sounds/track09.mp3";
+		a = 'i';
+
+	}
+	if (request.num == '74') {
+		soundEffect.src = "/sounds/track10.mp3";
+		a = 'j';
+
+	}
+	if (request.num == '75') {
+		soundEffect.src = "/sounds/track11.mp3";
+		a = 'k';
+
+	}
+	if (request.num == '76') {
+		soundEffect.src = "/sounds/track12.mp3";
+		a = 'l';
+
+	}
+	if (request.num == '77') {
+		soundEffect.src = "/sounds/track13.mp3";
+		a = 'm';
+
+	}	
+	if (request.num == '78') {
+		soundEffect.src = "/sounds/track14.mp3";
+		a = 'n';
+
+	}
+	if (request.num == '79') {
+		soundEffect.src = "/sounds/track15.mp3";
+		a = 'o';
+
+	}*/
 	if (request.num == '80') {
 		//soundEffect.src = "/sounds/track16.mp3";
 		a = 'p';
 		if (now_playing && video_controlable) {document.id(myvideo).play();__playing = true;}
 
 	}
+	/*if (request.num == '81') {
+		soundEffect.src = "/sounds/track15.mp3";
+		a = 'q';
 
+	}*/
 	if (request.num == '82') {
 		//soundEffect.src = "/sounds/track14.mp3";
 		a = 'r';
@@ -2195,13 +2352,23 @@ function bongoKey(request) {
 
 	}
 	if (request.num == '83') {
-
+		//soundEffect.src = "/sounds/track13.mp3";
 		a = 's';
 		if (now_playing && video_controlable) {document.id(myvideo).pause();__playing = false;}
 
 	}
 	if (request.num == '84') {
-
+		//soundEffect.src = "/sounds/track12.mp3";
+		
+		// this is highly risky so don't
+		/* a = 't';
+		if (playSomeMusic && selectedFile && cine) {
+		  setCookie('loneGuy', true, 1);
+		  setCookie('playedFileName', curMoviesList[0]);
+		  setCookie('cT_'+curMoviesList[0],document.id('video-'+document.id('name').value).currentTime, 14400);
+		  if (document.id('one-'+document.id('name').value).style.color == "rgb(255, 255, 0)") setCookie('cinemaGuy', true, 10); //hack ash
+		  location.reload();
+		} */
 	}
 	if (request.num == '85') {
 		//soundEffect.src = "/sounds/track11.mp3";
@@ -2240,6 +2407,8 @@ const onParticipantLeft = (request) => {
 	    	
 		if (small_device || tablet) {
 			// a guy left
+			document.id('participants').style.top='-68vh';
+			/*
 			if (pcounter === 1) { document.id('participants').style.position = 'relative'; document.id('participants').style.top = saved_top; }
 			document.id('participants').style.marginTop = pcounter === 1 ? isIOSFirefox() ?  '-46vh' : '-55vh' : isIOSFirefox() ? '-50vh' : '-59vh';
 			if (pcounter === 1) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
@@ -2247,7 +2416,7 @@ const onParticipantLeft = (request) => {
 			if (pcounter === 3) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
 			if (pcounter === 4) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
 			if (pcounter > 4) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
-
+			*/
 		}		
 	} else {
 		let temp = request.name.split('_');
@@ -2265,7 +2434,9 @@ const onParticipantLeft = (request) => {
 	}
 	if (document.id('viewer_menu')) document.id('viewer_menu').setStyles({'opacity': 0,'zIndex': 0});
 }
-
+/*
+Diez peliculas cortas anti-globalistas en hispaniol he incluido en la lista de GREENHALL - disfrutalo ahora 24 horas cada dia non-stop. Solo tenemos Room-House para peliculas non cenzurada http://cinema.room-house.com.
+*/
 const onViewerLeft = (n) => {
 	
 	var cinemaGoer = cinemaGoers[n];

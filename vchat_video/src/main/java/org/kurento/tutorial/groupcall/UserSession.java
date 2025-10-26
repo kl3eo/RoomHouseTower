@@ -176,6 +176,11 @@ public class UserSession implements Closeable {
     return session;
   }
 
+  /**
+   * The room to which the user is currently attending.
+   *
+   * @return The room
+   */
   public String getRoomName() {
     return this.roomName;
   }
@@ -248,6 +253,8 @@ public class UserSession implements Closeable {
     final WebRtcEndpoint incoming = incomingMedia.remove(senderName);
 
     log.info("PARTICIPANT {}: removing endpoint for {}", this.name, senderName);
+//    incoming.release(); // --ZOZZ
+
     
     if (incoming != null) incoming.release(new Continuation<Void>() {
       @Override
@@ -330,6 +337,11 @@ public class UserSession implements Closeable {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
   @Override
   public boolean equals(Object obj) {
 
@@ -345,6 +357,11 @@ public class UserSession implements Closeable {
     return eq;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#hashCode()
+   */
   @Override
   public int hashCode() {
     int result = 1;

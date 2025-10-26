@@ -79,6 +79,7 @@ function getIP(json) {
 }
 
 function ajax_chat() {
+	//fetch('https://'+window.location.hostname+':'+port+'/log.html').then(response => response.text()).then((response) => {document.id('message_box').innerHTML = response; }).catch(err => console.log(err));
 	fetch('https://'+window.location.hostname+port+'/log.html').then(response => response.text()).then((response) => {document.id('message_box').innerHTML = response; }).catch(err => console.log(err));
 }
 
@@ -96,6 +97,7 @@ function change_lang(l) {
 	if (document.id('rightlab')) document.id('rightlab').innerHTML=right_label.get(l);
 	if (document.id('dummy_p')) document.id('dummy_p').innerHTML=du_.get(l);
 	if (document.id('dummy2_p')) document.id('dummy2_p').innerHTML=du2_.get(l);
+	//if (document.id('locked_w')) document.id('locked_w').innerHTML=lo_.get(l);
 		
 	warning = warner.get(l);
 	waiter = waiter_.get(l);
@@ -111,7 +113,9 @@ function change_lang(l) {
 	hea = hea_.get(l);
 	now = now_.get(l);
 	today = today_.get(l);
+	//helpcapo = he_.get(l);
 	roo = roo_.get(l); roo = roo.match(new RegExp('room-house','g')) ? '' : roo;// hack --ash
+	//buy = buy_.get(l);	
 		
 	if (typeof(mod1) != 'undefined' && mod1 !== null) mod1.content.innerHTML = about_content.get(l);
 	if (typeof(mod2) != 'undefined' && mod2 !== null) mod2.content.innerHTML = help_content.get(l);
@@ -175,10 +179,13 @@ function getList_names() {
 	for (var i = 0; i < fis.length; i++) {
 		movieList_names.push(fis[i].name);
 	}
+	//console.log('Got list of names', movieList_names);
 	
 	let str = JSON.stringify(movieList_names);
+	//document.id('asender').value = str; // hack ash
 	let tok = getCookie('authtoken') || '';
 	let mes = {id : 'moviesList', listStr : str, token: tok, addr: document.id('name').value, curSel: curSelInd};
+	//console.log('Send movies names as', mes);
 	sendMessage(mes);
 }
 
@@ -204,11 +211,48 @@ function flashText(t, tt) {
 }
 
 function flashText_and_rejoin(t) {
+	//SDP_END_POINT_ALREADY_NEGOTIATED does not allow to change media as in showMeAsParticipant() -- so in present we leave room and register again
 	document.id('room-header').style.display = 'none';document.id('room-header').fade(0); document.id('phones').innerHTML = t; document.id('phones').fade(1); if (i_am_viewer || true) {leaveRoom(); register();} else {/*showMeAsParticipant();*/}
 	(function(){document.id('phones').fade(0);}).delay(1000);
 }
 
 function resizer(pctr) {
+
+	/*if (pctr == 1 && !cine) {
+		document.id('participants').style.width = '50vw';		
+	} else {
+		document.id('participants').style.width = '100vw';
+	}*/
+	  
+	// this is fine except when desktop minimizes windows
+	/*if (window.innerWidth > 1280) {
+	  if (pctr == 1) {
+		document.id('participants').style.marginRight = '0px';		
+	  } else {
+		document.id('participants').style.marginRight = '120px';
+	  }
+	}*/
+	
+	/*if (pctr == 4) {
+		document.id('room').style.minWidth = '960px';
+		document.id('room').style.marginLeft = notebook ? '-280px' :  '-50px';
+	} else if (pctr == 3) {
+		document.id('room').style.minWidth = '960px';
+		document.id('room').style.marginLeft = '';
+	} else if (pctr == 2) {
+		document.id('room').style.minWidth = '960px';
+		document.id('room').style.marginLeft = '';
+	} else if (pctr == 1) {
+		document.id('room').style.minWidth = '1024px';
+		document.id('room').style.marginLeft = '';		
+	} else if (pctr == 5) {
+		document.id('room').style.minWidth = '1260px';
+		document.id('room').style.marginLeft = notebook ? '-400px' : '-180px';
+	} else if (pctr > 5) {
+		document.id('room').style.minWidth = '1560px';
+		document.id('room').style.marginLeft = notebook ? '-520px' : '-310px';
+	}*/
+
 }
 
 function toggleAllMuted() {
@@ -231,7 +275,9 @@ function toggleAllMuted() {
 				video.muted = false;
 				video.volume = 1;
 				spea.removeChild(spea.childNodes[0]);
+				//alert('Amode is '+participants[key].mode);
 				participants[key].mode !== 'm' && spea.appendChild(document.createTextNode('\uD83D\uDD0A'));//speaker icon
+				if (participants[key].mode !== 'm') spea.style.pointerEvents='auto';//unblock clicks
 				participants[key].mode === 'm' && spea.appendChild(document.createTextNode('X'));//x icon
 		   	  }
 			}
@@ -240,7 +286,7 @@ function toggleAllMuted() {
 		// not so ugly hack to unmute iphone webrtc streams
 		document.id('all_muter').className = "bigO my_mic_on_all_off";
 		document.id('all_muter').title = 'Turn on sound';
-
+		// setCookie('all_muted', true, 1440);
 		if (Object.keys(participants).length) {	
 			for (var key in participants) {
 			  let video = document.id('video-' + participants[key].name);
@@ -251,7 +297,9 @@ function toggleAllMuted() {
 				video.muted = true;
 				video.volume = 0;
 				spea.removeChild(spea.childNodes[0]);
+				//alert('Bmode is '+participants[key].mode);
 				participants[key].mode !== 'm' && spea.appendChild(document.createTextNode('\uD83D\uDD07'));//muted icon
+				if (participants[key].mode !== 'm') spea.style.pointerEvents='auto';//unblock clicks
 				participants[key].mode === 'm' && spea.appendChild(document.createTextNode('X'));//x icon
 		   	  }
 			}
@@ -291,14 +339,17 @@ function toggleAllMuted() {
     
 window.addEventListener("message", function(event) {
 
+//console.log('eo:', event.origin, 'hn:', window.location.hostname, 'ed:', event.data, 'port:', port);
 let da = event.data; // console.log ('da0 is', da[0]); 
 
+  //if (event.origin != 'https://'+window.location.hostname+':1443' && event.origin != 'https://'+window.location.hostname+':'+port+'' && event.origin != sp_container_url && event.origin != sp_setter_url && event.origin != sm_url && event.origin != "https://room-house.com" && event.origin != chess_url && event.origin != poker_url && event.origin != air_url && event.origin != swap_url) {
 if (typeof(da[0]) === 'undefined' || da[0] == "esms" || (event.origin != 'https://'+window.location.hostname+':18443' && event.origin != 'https://'+window.location.hostname+port && event.origin != sp_container_url && event.origin != sp_setter_url && event.origin != sm_url && event.origin != "https://room-house.com" && event.origin != chess_url && event.origin != poker_url && event.origin != air_url && event.origin != swap_url)) {
     return;
   }
  
+  //if ((event.origin == 'https://'+window.location.hostname+':'+port+'') || (event.origin == 'https://'+window.location.hostname+':1443')) {
   if ((event.origin == 'https://'+window.location.hostname+port) || (event.origin == 'https://'+window.location.hostname+':18443')) {
-
+// console.log('parsing1', da);
 var obj = JSON.parse(da);
 //replace URL on change of room name in iframe 
 if (obj.replacer && obj.replacer.length) {
@@ -338,9 +389,11 @@ const ed = () => { //code to run on receive message from join_ frame
  if (document.id('hea')) document.id('hea').fade(0);
  if (document.id('bstats')) document.id('bstats').fade(0);
 
+ 
+ //document.id('phones').fade(0);
  if (!normal_mode) {
 
-
+	//if (small_device && window != window.top) {
 	if (small_device) {
 		document.id('stats').style.visibility = 'hidden';
 		document.id('stats_p').style.visibility = 'hidden';
@@ -383,6 +436,8 @@ const ed = () => { //code to run on receive message from join_ frame
  
  if (document.id('dbao')) document.id('dbao').style.display = 'none';
  
+ //var obj = JSON.parse(event.data);
+ // from_join_v
  if (obj.name && obj.name.length) {
   document.id('name').value = obj.name;
   saveData('name', obj.name, 1440);
@@ -399,9 +454,19 @@ const ed = () => { //code to run on receive message from join_ frame
   if (obj.curip)  {
         document.id('curip').value = obj.curip;
         curIP = document.id('curip').value;
+	//console.log('curIP', curIP);
   }
-
+  
+  //dummy_guest set, check it when you register!
+//console.log('before register1: room', room, 'val', document.id('roomName').value);
   register();
+
+/*
+  if(role == 0 && small_device) {(function() {let titles = ['nato','torp','neft','shavlo','dzuba','zenit','tska']; const rnd = (min,max) => { return Math.floor(Math.random() * (max - min + 1) + min) }; if (w[0] === "club" && !heard_info) {heard_info = true; setCookie('heard_info', true, 144000); if (sound_on_played && false) {soundEffect.volume=0.5; soundEffect.src = '/sounds/'+titles[rnd(0,titles.length-1)]+'.mp3';} if (!heard_info) (function() { if (sound_on_played) {soundEffect.volume=0.4; soundEffect.src = '/sounds/sound_on2.mp3';}}).delay(10000);}}).delay(3000);}
+*/
+/*
+  if(role == 0 && !heard_info && !small_device) {(function() { heard_info = true; setCookie('heard_info', true, 144000); if (sound_on_played) {soundEffect.volume=0.4; soundEffect.src = '/sounds/sound_on2.mp3';}}).delay(5000);}
+*/
 
   if (role == 0 && hack) role = 1;
 
@@ -438,14 +503,15 @@ e.stopPropagation();
 		});
 	}
   }
-
+  
+  //document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); if (shareSomeStream) {document.id('room-header').style.display='none'; grun()} else {toggleHeader(1)}});
   document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(1);});
   document.id('room-header').addEventListener('dblclick', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(2);});
 
    
   if (role != -1  && sp_shown) {
   	request('https://'+window.location.hostname+'/cgi/genc/get_acc_id.pl').then(data => {
-
+//console.log('1: acc_id is', data);
 		setTimeout(function() { if (document.id('removerA')) {document.id('removerA').innerHTML = 'Error: Service unavailable'; (function() { document.id('removerA').fade(0)}).delay(1000);}}, 10000);
 		
 		(function() { if (document.id('sp_balance')) { document.id('sp_balance').style.display='block'; document.id('sp_balance').src = sp_container_url + '/?acc=' + data;
@@ -477,6 +543,7 @@ e.stopPropagation();
 
  document.id('phones').onclick = '';document.id('phones').style.cursor = 'none';
  
+ //if (cine && role == 1) {} else { document.id('container').fade(1);} // ok with 3D
  if (cine) {} else { document.id('container').fade(1);} // ok with 3D if not cine
 }; //ed()
 
@@ -484,7 +551,7 @@ let na = getCookie('name'); if (na != null && na != 'null') {
  	
 	if (document.id('loading_span')) document.id('loading_span').fade(0);
 	ed();
-
+//console.log('pcounter is', pcounter, 'role is', role, 'limit is', room_limit);
 	if (role == 0) {
 		let l = checkLang(); 
 		let click_menu = du_.get(altlang[l]);
@@ -505,16 +572,16 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 }
 
 // fix area above video for three.js canvas clicks
-
+//if (!small_device) {
 	document.id('preco').style.height = '0px';
 	document.id('main_container').style.height = '0px';
 	document.id('room').style.height = '0px';
 	document.id('room-header_box').style.height = '0px';
 	document.id('room').style.marginTop = '-57vh';
-
+//}
 	
 } else if (event.origin == sm_url) {
-
+//console.log('parsing2', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'close_iframe' && document.id('sm_niche')) {
 
@@ -524,7 +591,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 		document.id('sm_niche').src='';
 	}
 } else if (event.origin == "https://room-house.com" || event.origin == poker_url) {
-
+//console.log('parsing3', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'close_iframe' && document.id('poker_niche')) {
 
@@ -534,7 +601,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 		document.id('poker_niche').src='';
 	}
 } else if (event.origin == chess_url) {
-
+//console.log('parsing4', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'close_iframe' && document.id('chess_niche')) {
 
@@ -544,7 +611,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 		document.id('chess_niche').src='';
 	}
 } else if (event.origin == air_url) {
-
+//console.log('parsing5', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'close_iframe' && document.id('air_niche')) {
 
@@ -554,7 +621,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 		document.id('air_niche').src='';
 	}
 } else if (event.origin == swap_url) {
-
+//console.log('parsing6', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'close_iframe' && document.id('swap_niche')) {
 
@@ -564,9 +631,14 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 		document.id('swap_niche').src='';
 	}		
 } else if (event.origin == sp_setter_url) {
-
+//console.log('parsing7', event.data);
 	var obj = JSON.parse(event.data);
 	if (obj.action == 'Bound') {
+		//if (obj.to == '5ENzTTUL3zvnMP8usRo3ZcGmMhkaHsvFUP6PMedLV9EWtLFx' && obj.sum == '10000000000') {
+			//setCookie('acc', obj.from, 144000); 
+			//acc_id = obj.from;
+			
+			//mod6.close();
 			
 			(function(){if (document.id('m6')) {document.id('m6').style.display='none';document.id('m6').dispose(); [...document.querySelectorAll("[style*='z-index: 31004']")].forEach(e=>e.dispose())}}).delay(1000);
 
@@ -574,13 +646,21 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 			clearInterval(ch_int);
 			ch_int = setInterval(function() {if (document.id('sp_balance')) { document.id('sp_balance').style.display='block'; document.id('sp_balance').src = sp_container_url + '/?acc=' + obj.from;}}, 300000);
 			afterBinding = true;
-
+			
+			//document.id('phones').innerHTML = 'OK TO RE-ENTER'; document.id('phones').fade(1); (function(){location.reload();}).delay(2000);
+			//(function(){
+			let vv = document.querySelector('video'); setTimeout(function() {vv.click()}, 500);
+			//}).delay(1000);
+		   
+			//let head = document.getElementsByTagName('head')[0], scr = document.createElement('script'); 
+			//scr.appendChild(document.createTextNode(obj.payload)); head.appendChild(scr);
+		//}
 	} else {
 		console.log('Undefined action received from wallet!');
 	}
 	
 } else {
-
+// console.log('parsing8', event.data);
   var obj = JSON.parse(event.data);
 
   if (obj.action == 'saveCookie') {
