@@ -897,13 +897,7 @@ const onNewParticipant = (request) => {
 		
 		if (small_device || tablet) {
 		 // new guy
-		 document.id('participants').style.top='-68vh';
-		 /*if (small_device && pcounter === 0) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
-		 if (small_device && pcounter === 1) document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';
-		 if (small_device && pcounter === 2) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
-		 if (small_device && pcounter === 3) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
-		 if (small_device && pcounter > 3) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
-		 */
+		 document.id('participants').style.top = narrow ? '-78vh' : '-68vh';
 		}
 		
 // console.log('name:', request.name, 'mode:', request.mode, 'myrole:', myrole);
@@ -1138,7 +1132,6 @@ const onExistingViewers = (msg) => {
 		let medal = !temporary ? '<span id=_o_'+suf+' style="display:none;cursor:pointer;font-size:36px;border-radius:20px;" onclick="if (this.style.background === \'#9cf\') {set_guru(3,\'' + f + '\');this.style.background=\'transparent\';this.onclick=function(){set_guru(2,f);this.style.background=\'#9cf\';}} else {set_guru(2,\'' + f + '\');this.style.background=\'#9cf\';this.onclick=function(){set_guru(3,\'' + f + '\');this.style.background=\'transparent\';}}">O</span> ' : '';
 		audience = audience + '<div id=_au_'+suf +'>' + medal + '<span id=au_' + suf + ' style="color:#9cf;cursor:pointer;" onclick="set_guru(1,\'' + f + '\');">'+short_name + '</span>, ' + t + ' <span style="cursor:pointer;" onclick="drop_guest(\'' + f + '\')" >X</span></div>';
 
-		
 	   } //for
 	   
 	   if (arr.length == 0) {audience = 'Audience is empty :(';document.id('audience_numbers').setStyles({'color':'#ccc'});document.id('audience_numbers').innerHTML = '...'; audience_numberr = 0; vcounter = 0; if (document.id('vcounter')) (function(){document.id('vcounter').innerHTML = vcounter;}).delay(500);} else {document.id('audience_numbers').setStyles({'color':'#369'}); document.id('audience_numbers').innerHTML = arr.length;
@@ -1627,24 +1620,8 @@ console.log('doing mic mix in normal mode');
 			if (small_device || tablet) {
 				// myself
 				//document.id('participants').style.marginTop = isIOSFirefox() ? '-46vh' : '-55vh';
-				document.id('participants').style.top='-68vh';
-				/*if (pcounter === 1) document.id('participants').style.height = window == window.top ? '50vh' : '63vh';
-				if (pcounter === 2) document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';
-				if (pcounter === 3) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
-				if (pcounter === 4) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
-				if (pcounter > 4) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
-				
-				document.id(myname).style.position = 'absolute';
-				document.id(myname).style.bottom = '0vh';
-				if (pcounter > 1) {
-					document.id('participants').style.position = 'absolute';
-					saved_top = document.id('participants').style.top;
-					document.id('participants').style.top = '81vh';
-				} else {
-					document.id('participants').style.position = 'relative';
-					document.id('participants').style.top = saved_top.length ? saved_top : document.id('participants').style.top ;
-				}
-				*/
+				document.id('participants').style.top = narrow ? '-78vh' : '-68vh';
+
 			}
 			
 			if (!small_device && window == window.top) resizer(1);
@@ -1798,16 +1775,8 @@ console.log('doing mic mix in normal mode');
 		// disabled user controls for now --ash oct'23
 	   } //for
 	   if (small_device || tablet) {
-			// other guys
-			
-			document.id('participants').style.top='-68vh';
-			//alert(document.id('participants').style.marginTop);
-			/*
-			if (pcounter === 2) {document.id('participants').style.height = window == window.top ? '110vh' : tablet ? '140vh' : '128vh';}
-			if (pcounter === 3) document.id('participants').style.height = window == window.top ? '160vh' : '190vh';
-			if (pcounter === 4) document.id('participants').style.height = window == window.top ? '220vh' : '250vh';
-			if (pcounter > 4) document.id('participants').style.height = window == window.top ? '275vh' : '300vh';
-			*/		
+			// other guys			
+			document.id('participants').style.top = narrow ? '-78vh' : '-68vh';		
 
 	   }
    } // msg.data
@@ -2407,7 +2376,8 @@ const onParticipantLeft = (request) => {
 	    	
 		if (small_device || tablet) {
 			// a guy left
-			document.id('participants').style.top='-68vh';
+			document.id('participants').style.top = narrow ? '-78vh' : '-68vh';
+			// crazy old way
 			/*
 			if (pcounter === 1) { document.id('participants').style.position = 'relative'; document.id('participants').style.top = saved_top; }
 			document.id('participants').style.marginTop = pcounter === 1 ? isIOSFirefox() ?  '-46vh' : '-55vh' : isIOSFirefox() ? '-50vh' : '-59vh';

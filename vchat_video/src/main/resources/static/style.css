@@ -359,7 +359,7 @@ input[type=button]:active, input[type=submit]:active {
 .participant.main_i {
 	width: 96%;
 	min-width: 320px;
-	margin: 3vh auto 7vh auto;
+	margin: 2vh auto 2vh auto;
 	!float: bottom;
 }
 

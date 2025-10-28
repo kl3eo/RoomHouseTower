@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=0.96, user-scalable=no" id="viewport-meta">
+<meta name="viewport" content="width=device-width, initial-scale=0.75, user-scalable=no" id="viewport-meta">
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="private, no-cache, no-store, must-revalidate, max-age=0, proxy-revalidate, s-maxage=0">
 <meta http-equiv="Pragma" content="no-cache">
@@ -9,7 +9,7 @@
  
 <title>Welcome to Rumhaus</title>
    
-<link rel="styleSheet" href="style.css" type="text/css" media="screen">
+<link rel="styleSheet" href="style.css?ver=d" type="text/css" media="screen">
 
 <!-- slider -->
 <link rel="stylesheet" href="./css/splide.min.css" />
@@ -68,6 +68,9 @@ var roomees_str = '';
 var shareSomeStream = false;
 var gifrid = '';
 
+const narrow = screen.width/screen.height < 0.55 && screen.width/screen.height >= 0.45
+const very_narrow = screen.width/screen.height < 0.45 // can't be ?
+
 const port = is_ipaddr ? window.location.port == 8443 ? ':8443' : '' : '';
 
 const request = async (url) => {
@@ -86,7 +89,7 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44ap"></script>
+<script src="./js/a12.js?ver=1.44aw"></script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />
@@ -234,13 +237,12 @@ const city_or_main = 1;
 	color: #369;
  }
  #participants {
- 	!border: 3px solid #770;
 	position:relative;
 	!background: #9cf;
 	margin:0 auto 0 auto;
  	display: flex;
  	flex-direction: column;
- 	gap: 10px;
+ 	gap: 5px;
  }
  .mww {
         position:absolute;
@@ -1817,7 +1819,7 @@ var viewport_set
 // Define our viewport meta values
 var viewports = {
 		default: viewport_meta.getAttribute('content'),
-		//landscape: 'width=990',
+
 		narrow: 'initial-scale=0.75, width: device-width, user-scalable=no',
 		very_narrow: 'initial-scale=0.55, width: device-width, user-scalable=no'
 	};
@@ -1825,9 +1827,9 @@ var viewports = {
 // Change the viewport value based on screen.width
 var viewport_set = function() {
 
-		if ( small_device && screen.width/screen.height < 0.65 && screen.width/screen.height >= 0.45 && not_iOS())
+		if ( small_device && narrow)
 			viewport_meta.setAttribute( 'content', viewports.narrow );
-		else if ( small_device && screen.width/screen.height < 0.45 && not_iOS())
+		else if ( small_device && very_narrow)
 			viewport_meta.setAttribute( 'content', viewports.very_narrow );
 		else
 			viewport_meta.setAttribute( 'content', viewports.default );
