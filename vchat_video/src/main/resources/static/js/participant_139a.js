@@ -60,7 +60,6 @@ const doSwitchOneMode = (el, acc_host, sum_host) => {if (false) console.log(el);
 			  }
 			  
 			  let topo = (window.innerHeight-540)/2 - 30; topo = topo + 'px'; if (!small_device) document.id('m6').style.top=topo;	//trim it, sir
-			  // document.id('m6').onclick=function() {document.id('m6').style.display='none';document.id('m6').dispose();};
 			  	
 		//if we want to use both mBox and jQuery
 			  //mod6 = new mBox.Modal({content: sp_setter,setStyles: {content: {padding: '25px', lineHeight: 24, margin: '0 auto', fontSize: 18, color: '#222', height: h}}, width:280, id:'m6', height: h, title: 'SkyRHC wallet', attach: 'newacc'}); document.id('newacc').click(); let lefto = (window.innerWidth-340)/2; lefto = lefto + 'px'; let topo = (window.innerHeight-540)/2; topo = topo + 'px'; if (small_device) topo = '12vh';document.id('m6').style.cursor='pointer'; document.id('m6').style.display='block'; document.id('m6').style.left=lefto; document.id('m6').style.top=topo; (function(){document.id('m6').fade(1);}).delay(200); document.id('m6').onclick=function(){document.id('m6').style.display='none';};
@@ -69,9 +68,7 @@ const doSwitchOneMode = (el, acc_host, sum_host) => {if (false) console.log(el);
 			}
 		}).catch(err => console.log(err));
 	   } else {
-		/*
-		if(!playSomeMusic&&!shareSomeScreen){fullscreen=true; chat_shown=1;document.id("logger").click();let re=/video-/gi;let a=el.id.replace(re,"");let v=document.id("video-"+a);if(v && !v.fullscreenElement && !check_iOS()){v.requestFullscreen()}(function(){document.id("room-header").style.display="none";if (normal_mode) document.id("room-backer").style.display="block";if (!small_device) {document.id("room").style.minWidth = "480px";document.id("room").style.marginLeft = "0px";}if(Object.keys(participants).length){for(var key in participants){if(participants[key].name!=a){participants[key].dispose();delete participants[key]}}}let c=document.id("one-"+a);if (c) c.fade(0);}).delay(500)}else{if(playSomeMusic){flashText("PLAYING VIDEO! STOP?")}else{flashText("SHARING SCREEN! STOP?")}}
-		*/
+
 		if (!switched) { switched = true; rejoin(); } else {if(!playSomeMusic && !shareSomeScreen){fullscreen=true; chat_shown=1;document.id("logger").click();let re=/video-/gi;let a=el.id.replace(re,"");let v=document.id("video-"+a);if(v && !v.fullscreenElement && !check_iOS()){v.requestFullscreen()}(function(){document.id("room-header").style.display="none";if (normal_mode) document.id("room-backer").style.display="block";if (!small_device) {document.id("room").style.minWidth = "480px";document.id("room").style.marginLeft = "0px";}if(Object.keys(participants).length){for(var key in participants){if(participants[key].name!=a){participants[key].dispose();delete participants[key]}}}}).delay(500)}else{if(playSomeMusic){flashText("PLAYING VIDEO! STOP?")}else{flashText("SHARING SCREEN! STOP?")}}}
 	   }
 	});	
@@ -164,8 +161,6 @@ function Participant(name, myname, mode, myrole) {
 	container.style.display='none';
 	container.style.pointerEvents='auto';
 	container.style.opacity=0;
-	//container.style.marginLeft='1px';
-	//container.style.marginRight='1px';
 	
 	i_am_guest = isPresentMainParticipant() & pcounter === 1 ? 1 : i_am_guest;
 
@@ -1056,20 +1051,10 @@ function CinemaGoer(name, myname, mode) {
 		
 	container.appendChild(slider);
 	
-	/*var sndMeter = document.createElement('div');
-	sndMeter.className = 'snd_meters';
-	sndMeter.id = 'sndm_' + name;
-	sndMeter.style.zIndex = 10112;
-
-	container.appendChild(sndMeter);
-	*/
-	
-	//document.id(video.id).style.display = 'none';
 	speaker.style.display = 'none';
 	
 	if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true') || name == myname) video.muted = true;
-	//if ((all_muted === true || all_muted === 'true') || (coo_muted === true || coo_muted === 'true')) video.muted = true;
-	
+
 	if (video.muted !== true){
 		speaker.appendChild(document.createTextNode('\uD83D\uDD0A')); //speaker icon
 		
@@ -1094,9 +1079,6 @@ function CinemaGoer(name, myname, mode) {
 		console.log('newed ac2..');
 		let soundMeter = new SoundMeter(ac);
 					
-		//let fps = 10;
-		//let vidStream = video.mozCaptureStream ? video.mozCaptureStream(fps) : video.captureStream ? video.captureStream(fps) : null;
-
 		let vidStream = this.rtcPeer.getRemoteStream(); let audio = vidStream.getAudioTracks()[0];
 		
 		if (vidStream.getAudioTracks()[0]) soundMeter.connectToSource(vidStream, function(e) {if (e) {console.log('error connectToSource',e); return;}

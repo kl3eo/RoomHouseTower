@@ -404,7 +404,8 @@ const ed = () => { //code to run on receive message from join_ frame
 		document.id('tex').style.visibility = 'hidden';
 		document.id('chess').style.visibility = 'hidden';
 		document.id('want').style.visibility = 'hidden';
-		document.id('logger').style.display = 'none';		
+		document.id('logger').style.display = 'none';
+		document.id('participants').style.marginTop = '-14vh'; //last minute hack for cinema		
 	}
 	
 	if (!small_device) document.id('controls').style.display = 'none';
@@ -424,10 +425,13 @@ const ed = () => { //code to run on receive message from join_ frame
 	 
 	 let hv = homee == 'REDHALL' ? small_device ? 24 : 30 : homee == 'BLUEHALL' ? small_device ? 24 : 27 : homee == 'GREENHALL' ? small_device ? 24 : 33 : 33;//need to calculate somehow
 	 document.id('participants').style.top = '-'+hv+'vh';
+	 if (!small_device) document.id('participants').style.marginTop = '-50vh';
 	 
 	 document.id('house').style.textAlign = 'center';
 	 
  } else {
+	document.id('theater_rows_boxx').style.display='none';
+	document.id('viewer_menu').style.display='none';
 	document.id('main_container').style.marginTop = '-60px';
 	let bgr = homee == 'REDHALL' ? 'red' : homee == 'BLUEHALL' ? 'blue' : homee == 'GREENHALL' ? 'green' : 'empty';
 	document.id('city').style.background = bgr != 'empty' && !small_device ?  'url(/img/' + bgr + '_screen.jpg) center center no-repeat' : null;	(function(){document.id('phones').fade(0);}).delay(500);
@@ -811,12 +815,11 @@ fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credenti
 
 const cli4 = () => {
 
-if (!playSomeMusic && !shareSomeScreen) {toggleAllMuted();} else { i_am_muted = !i_am_muted}
+if (!playSomeMusic && !shareSomeScreen) {toggleAllMuted();} else { /*i_am_muted = !i_am_muted*/ flashText('PLAYING VIDEO! STOP?')}
 }
 
 const cli5 = () => {let sem  = window.innerWidth > 1024 ? '7' : ''; document.id('message_box').style.display = 'block'; document.id('audience_box').style.display = 'none';
 new_message = 0; if (chat_shown) {document.id('message_wrap').fade(0); document.id('chatter').fade(0); document.id('audience').fade(0); document.id('antichatter').fade(0);chat_shown = 0; document.id('logger').className = "bigO logger";} else {
-//if (!small_device) {let roomRect = document.id('room').getBoundingClientRect();let roomTop = parseInt(roomRect.top); document.id('message_wrap').style.top = voting_shown ? '0vh' : roomTop > 400 ? '6vh' : roomTop > 360 ? '4vh' : roomTop > 320 ? '2vh' : roomTop > 280 ? '0vh' : '0vh'; if (document.id('sp_container') && sp_shown) document.id('message_wrap').style.top = '0vh';}';
 if (!small_device) document.id('message_wrap').style.top = '-5vh';
 if (small_device || notebook) document.id('message_wrap').style.top = '-10vh'; 
 document.id('chatter').style.display='block'; document.id('antichatter').style.display='block'; document.id('audience').style.display='block'; document.id('message_wrap').fade(1); document.id('chatter').fade(1); document.id('audience').fade(1); document.id('antichatter').fade(1); chat_shown = 1; document.id('logger').className = "bigO logger_f"; if (voting_shown) { (function(){document.id('subcontrols').style.display='block';
@@ -836,5 +839,5 @@ document.id('message_wrap').fade(0);document.id('chatter').fade(0);document.id('
 const cli8 = () => { homee = document.id('roomName').value !== w[0] && homee === w[0] ? document.id('roomName').value : homee;
 //fetch('https://'+window.location.hostname+':'+port+'/cgi/genc/checker.pl'
 fetch('https://'+window.location.hostname+port+'/cgi/genc/get_guests.pl?room='+homee, {credentials: 'include'}).then(function(response){if (response.status !== 200){console.log('Status Code: ' + response.status); return;} response.json().then(function(data) { if (data != 0) { let audi = ''; const array = Object.keys(data).map(key => data[key]); array.forEach(item => { let s = item[0].split('_'); let short = s[0]; let d= item[3].split(' '); let ti = d[1].split(':'); let tim = ti[0]+':'+ti[1]; audi = audi + '<div><span>' + short + '</span>,&nbsp;<span>' + item[1] + '</span>,&nbsp;<span>' + item[2] + '</span>&nbsp;<span>' + tim + '</span></div>';}); audi = audi + '<div style="line-height:60px;">&nbsp;</div>'; document.id('logger').click(); chat_shown = 0; document.id('message_box').innerHTML = audi; document.id('message_box').fade(1);
-}})}).catch(err => console.log(err));
+} else { document.id('num_guests').innerText = '0';document.id('message_box').innerHTML = '';document.id('message_box').fade(1); }})}).catch(err => console.log(err));
 }

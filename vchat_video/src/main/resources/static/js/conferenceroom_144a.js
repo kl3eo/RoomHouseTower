@@ -116,6 +116,7 @@ const swap_url = "https://coins.room-house.com";
 
 //const role  = 0; // debug
 
+//const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window.innerWidth <=1024 || window != window.top ? true : false; // set desktop like small_device
 const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window != window.top ? true : false;
 const tablet = small_device && screen.width >= 960 ? true : false;
 const notebook = screen.height <= 800 ? true : false;
@@ -1013,6 +1014,10 @@ const onExistingViewers = (msg) => {
 
    let myname = document.id('name').value;
    
+   let disconnected = getCookie('disconnect') || false;
+
+//console.log('here disconnected is', disconnected);
+   
    let audience = '';
    let theater_rows = '';
 
@@ -1064,8 +1069,6 @@ const onExistingViewers = (msg) => {
 		
 			receiveCGAudio(f, 'a');
 
-
-
 			let x = document.id('video-' + f) && document.id('video-' + f).muted == true && myname != f ? 'X' : '';
 			x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 			x = document.id('video-' + f) ? x : '';
@@ -1073,10 +1076,10 @@ const onExistingViewers = (msg) => {
 			theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {document.id(\'video-' + f + '\').muted=document.id(\'video-' + f + '\').muted == true ? false : true; document.id(\'sndm_' + f + '\').innerText=document.id(\'video-' + f + '\').muted == true ? \'X\' : \'\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';
 		}
 		
-		if (i_am_viewer && myname === f && !i_am_muted && cine) {
-			//console.log('Here we activate local camera!')
+		if (i_am_viewer && myname === f && !i_am_muted && cine && !disconnected) {
+
 			var cinemaGoer = new CinemaGoer(f, document.id('name').value, 'a' );
-			cinemaGoers[f] = cinemaGoer;let vi =
+			cinemaGoers[f] = cinemaGoer;
 	
 			g.video = cinemaGoer.getVideoElement();
       
@@ -1090,7 +1093,7 @@ const onExistingViewers = (msg) => {
 				mediaConstraints: constraints,
 				onicecandidate: cinemaGoer.onIceCandidate.bind(cinemaGoer)
 			}
-	
+
 			cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                   	   if(error) {
 				var ff = new RegExp('closed','ig');
@@ -1099,7 +1102,6 @@ const onExistingViewers = (msg) => {
                                         if(error) {
                                                 return console.error(error);
                                         }
-
                                         	startVideo(g.video);
                                         	this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
 						localStream = cinemaGoer.rtcPeer.getLocalStream();
@@ -1111,11 +1113,11 @@ const onExistingViewers = (msg) => {
                   		startVideo(g.video);
                   		this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
 				localStream = cinemaGoer.rtcPeer.getLocalStream();
-				//console.log('local stream', localStream)
 
 				x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 
-				theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {localStream.getAudioTracks()[0].enabled = localStream.getAudioTracks()[0].enabled === true ? false : true; document.id(\'sndm_' + f + '\').innerText = localStream.getAudioTracks()[0].enabled === true ? \'\' : \'X\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';
+				/*theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {localStream.getAudioTracks()[0].enabled = localStream.getAudioTracks()[0].enabled === true ? false : true; document.id(\'sndm_' + f + '\').innerText = localStream.getAudioTracks()[0].enabled === true ? \'\' : \'X\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';*/
+				theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="setCookie(\'disconnect\', true, 0.1); rejoin();"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';	
 		  	   }
          		});		
 		}
@@ -1229,7 +1231,7 @@ const onExistingParticipants = (msg) => {
    for (i = 1; i <= num_rooms; i++) {
    	sym = i == 2 ? 'B' : i == 3 ? 'C' : i == 4 ? 'D' : i == 5 ? 'E' : i == 6 ? 'F' : sym;
 	// let addon = sym == currRoom ? '&nbsp;&nbsp;<span style="color:#fed;border:0px solid #fed; padding:3px">ROOM' + i + '</span>&nbsp;&nbsp;' : '&nbsp;&nbsp;<span style="color:#9cf;cursor:pointer; padding:3px" onclick="currRoom = \'' + sym + '\';/*console.log(\'sym\',currRoom);*/(function(){document.id(\'bg_switch\').click()}).delay(500);flashText_and_rejoin(\'SKIP TO ROOM \' + currRoom);">ROOM' + i + '</span>&nbsp;&nbsp;';
-	let addon = sym == currRoom ? '&nbsp;&nbsp;<span style="color:#fed;border:0px solid #fed; padding:3px">' + roomees_arr[i-1] + '</span>&nbsp;&nbsp;' : '&nbsp;&nbsp;<span style="color:#9cf;cursor:pointer; padding:3px" onclick="currRoom = \'' + sym + '\'; cRoom = \'' + roomees_arr[i-1] + '\';/*console.log(\'sym\',currRoom);*/(function(){document.id(\'bg_switch\').click()}).delay(500);flashText_and_rejoin(\'SKIP TO \' + cRoom);">\"' + roomees_arr[i-1] + '\"</span>&nbsp;&nbsp;';
+	let addon = sym == currRoom ? '&nbsp;&nbsp;<span style="color:#fed;border:0px solid #fed; padding:3px">' + roomees_arr[i-1] + '</span>&nbsp;&nbsp;' : '&nbsp;&nbsp;<span style="color:#9cf;cursor:pointer; padding:3px" onclick="currRoom = \'' + sym + '\'; cRoom = \'' + roomees_arr[i-1] + '\';/*console.log(\'sym\',currRoom);(function(){document.id(\'bg_switch\').click()}).delay(500);*/flashText_and_rejoin(\'SKIP TO \' + cRoom);">\"' + roomees_arr[i-1] + '\"</span>&nbsp;&nbsp;';
  
 	room_sel = room_sel + addon;
    }
@@ -1561,12 +1563,13 @@ console.log('doing mic mix in normal mode');
                   	  	//startVideo(video);
                   	  	g.video.play();
 
-				if (playSomeMusic_muted === false) {
+				/*if (playSomeMusic_muted === false) {
 				    function getSoundData() {
 				       var sample = new Float32Array(analyser.frequencyBinCount);
 				       return analyser.getFloatFrequencyData(sample);  
 				    }
 				}
+				*/
 			  	
 				this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 				localStream = participant.rtcPeer.getLocalStream();
@@ -1911,7 +1914,6 @@ const receiveVideo = (sender, mode, role) => {
 				document.id(sender).style.float = 'none';
 				document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
 			}
-			//if (!cine) participant.activateMicIndic();
 
 	});
 
@@ -1948,7 +1950,6 @@ console.log('receiveCGAudio for', sender, 'options are', options);
 			this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
 			
 			//remoteStream = cinemaGoer.rtcPeer.getRemoteStream();
-			//if (cine) cinemaGoer.activateMicIndic();
 	});
 
 	if (cine) (function() {cinemaGoer.activateMicIndic()}).delay(3000);

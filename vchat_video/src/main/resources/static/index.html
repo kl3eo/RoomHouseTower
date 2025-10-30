@@ -1,6 +1,6 @@
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=0.75, user-scalable=no" id="viewport-meta">
+<meta name="viewport" content="width=device-width, initial-scale=0.90, user-scalable=no" id="viewport-meta">
 <meta charset="utf-8">
 <meta http-equiv="Cache-Control" content="private, no-cache, no-store, must-revalidate, max-age=0, proxy-revalidate, s-maxage=0">
 <meta http-equiv="Pragma" content="no-cache">
@@ -9,7 +9,7 @@
  
 <title>Welcome to Rumhaus</title>
    
-<link rel="styleSheet" href="style.css?ver=d" type="text/css" media="screen">
+<link rel="styleSheet" href="style.css?ver=g" type="text/css" media="screen">
 
 <!-- slider -->
 <link rel="stylesheet" href="./css/splide.min.css" />
@@ -89,7 +89,7 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44aw"></script>
+<script src="./js/a12.js?ver=1.44cl"></script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />
@@ -173,8 +173,8 @@ const city_or_main = 1;
 	border-radius: 10px;
 	max-height:235px;
 	height:90vw;
-	max-width:340px;
-	min-width:340px;
+	max-width:360px;
+	min-width:360px;
 	position:relative;
 	overflow:hidden;
 	margin:30% auto 0 auto;
@@ -192,6 +192,10 @@ const city_or_main = 1;
  body {
 	!border: 1px solid #700;
 	touch-action: manipulation;
+	!height: 100dvh;
+ }
+ #house {
+ 	max-width:420px;
  }
  .but_text {
  	font-size:24px;
@@ -213,9 +217,13 @@ const city_or_main = 1;
  .space {
  	width:2px
  } 
+ #theater_rows_boxx {
+	width:460px;
+	bottom:20vh;
+ }
  #viewer_menu {
 	width:100vw;
-	max-width:480px;
+	max-width:460px;
 	margin:0 auto 0 auto;
 	height:60px;
 	position:absolute;
@@ -239,6 +247,7 @@ const city_or_main = 1;
  #participants {
 	position:relative;
 	!background: #9cf;
+	top: -68vh;
 	margin:0 auto 0 auto;
  	display: flex;
  	flex-direction: column;
@@ -250,9 +259,10 @@ const city_or_main = 1;
 	min-width:340px;
 	max-width:640px;
 	left:0;top:12%;
-	height:50%;
+	!height:50%;
 	background:transparent;
 	border:0px solid #fff;
+	text-align: center;
  } 
  #slide_container {
  	display:none;
@@ -290,7 +300,7 @@ const city_or_main = 1;
         height:38px;
         line-height:42px;
         font-size:36px;
-        margin:8px 3px;
+        margin:8px 4px;
         padding:5px;
         border:1px solid #777;
         border-radius:30px;
@@ -401,6 +411,9 @@ const city_or_main = 1;
 }
 
 @media screen and (min-width: 1024px)  {
+ #house {
+ 	max-width:460px;
+ }
  .but_text {
  	font-size:16px;
  }
@@ -421,6 +434,10 @@ const city_or_main = 1;
  .space {
  	width:72px
  }
+ #theater_rows_boxx {
+ 	width:1000px;
+	bottom:20vh;
+ }
  #viewer_menu {
 	width:680px;
 	margin:-268px auto 0 auto;
@@ -432,7 +449,7 @@ const city_or_main = 1;
  }
  .mww {
         position:absolute;
-	width:96%;
+	width:100%;
 	min-width:340px;
 	max-width:1000px;
 	left:0;top:12%;
@@ -1197,7 +1214,7 @@ const city_or_main = 1;
 	color:#fff;
 	padding:5px;
 	width:96%;
-	max-width:317px;
+	max-width:360px;
 	max-height:235px;
 	height:90vw;
 	overflow-y:scroll;
@@ -1218,7 +1235,7 @@ const city_or_main = 1;
 	color:#fff;
 	padding:5px;
 	width:96%;
-	max-width:317px;
+	max-width:360px;
 	max-height:235px;
 	height:90vw;
 	overflow-y:scroll;
@@ -1457,7 +1474,7 @@ select:focus, input:focus, button:focus{
   </div>	
 </div>
 				
-<script>document.write('<div id="house" style="min-height:510px; height:84vh; position:relative; width:96vw; max-width:460px; margin:0 auto; border:0px dotted #9cf; background:#369 url(/img/people4_' + w[0] + '.room-house.com.png) top center no-repeat; text-align:center; display:none;">');</script>
+<script>document.write('<div id="house" style="min-height:510px; height:84vh; position:relative; width:100vw; margin:0 auto; border:0px dotted #9cf; background:#369 url(/img/people4_' + w[0] + '.room-house.com.png) top center no-repeat; text-align:center; display:none;">');</script>
 
 <div id="mww" class="mww">
 <div id="message_wrap" class="message_wrap">
@@ -1478,7 +1495,7 @@ select:focus, input:focus, button:focus{
 
 <div id="spinner" style="position:absolute;left:20%;top:25%;width:60%;height:50%;background:url('/img/spinner.gif') center center no-repeat;display:none;z-index:2310;"></div>
 				
-<div id="room_header_container" style="position:absolute;left:0;top:22%;width:80%;height:50%;min-width:480px;">
+<div id="room_header_container" style="position:absolute;left:0;top:22%;width:80%;height:50%;min-width:400px;">
 				<div style="float:right;margin-bottom:20px;" id="room-header_box">
 				  <h2 id="room-header" style="z-index:2200;position:relative;color:#777;margin: 8vw auto 0.5vw 20px;opacity:0;cursor:pointer;"></h2>
 				</div>
@@ -1700,7 +1717,7 @@ if (!curIP.length && false) {
 
 
 </div><!-- house -->
-
+<div id="theater_rows_boxx" style="position:relative;height:200px;margin:0 auto;background:transparent;border:0px solid #fed;display:block;"></div>
 </div><!-- city -->
 <div id="participants" style="position:relative;min-width:350px;text-align:center;z-index:1010; border: 0px solid #900;pointer-events: none;">
 	<div id="second_logger" style="width:50px;height:50px;background:url(/icons/chat2.png) center center no-repeat;display:none;z-index:33005;position:relative;" onclick="document.id('message_wrap').style.marginTop='35vh';cli5()"></div>
@@ -1713,7 +1730,6 @@ if (!curIP.length && false) {
 <div id="cbut" class="round_button long" onclick="eventHandler(67)"><img src="/img/beg48.png"></div><div id="dbut" class="round_button long" onclick="/*eventHandler(84)*/location.reload()"><img src="/img/relo48.png"></div>
 <div style="clear:left;"></div>
 </div><!-- viewer_menu -->
-<div id="theater_rows_boxx" style="position:relative;height:200px;width:1000px;margin:0 auto;background:transparent;border:0px solid #fed;display:block;"></div>
 <div id="icons_cr" style="float:right; opacity:0; white-space:nowrap;"><a target="_blank" href="https://icons8.com/icon/102718/перезапуск">Перезапуск</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></div>
 <div id="container" style="position:absolute;bottom:0;left:0;width:100%;height:100%;opacity:0;display:none;"></div>
 <div id="room_selector_box" style="position:absolute;top:10px;left:-60px;width:100%;height:30px;text-align:center;z-index:-10000;white-space:nowrap;">
@@ -1820,17 +1836,21 @@ var viewport_set
 var viewports = {
 		default: viewport_meta.getAttribute('content'),
 
+		
+		andro: 'initial-scale=0.68, width: device-width, user-scalable=no',
 		narrow: 'initial-scale=0.75, width: device-width, user-scalable=no',
 		very_narrow: 'initial-scale=0.55, width: device-width, user-scalable=no'
 	};
 
 // Change the viewport value based on screen.width
 var viewport_set = function() {
-
+		var ua = navigator.userAgent.toLowerCase(); var isAndroid = ua.indexOf("android") > -1;
 		if ( small_device && narrow)
 			viewport_meta.setAttribute( 'content', viewports.narrow );
 		else if ( small_device && very_narrow)
 			viewport_meta.setAttribute( 'content', viewports.very_narrow );
+		else if ( small_device && isAndroid)
+			viewport_meta.setAttribute( 'content', viewports.andro );
 		else
 			viewport_meta.setAttribute( 'content', viewports.default );
 	}
