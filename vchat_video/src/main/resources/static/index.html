@@ -9,7 +9,7 @@
  
 <title>Welcome to Rumhaus</title>
    
-<link rel="styleSheet" href="style.css?ver=g" type="text/css" media="screen">
+<link rel="styleSheet" href="style.css?ver=i" type="text/css" media="screen">
 
 <!-- slider -->
 <link rel="stylesheet" href="./css/splide.min.css" />
@@ -47,7 +47,7 @@
 <script src="./js/mBox.Core.js"></script>
 <script src="./js/mBox.Modal.js"></script>
 
-<script>var w = window.location.hostname.split('.'); var hack = false; var room_limit = 0; var roomee = ''; var normal_mode = true; var i_am_muted = false; var role = 0;
+<script>var w = window.location.hostname.split('.'); var hack = false; var roomee = ''; var normal_mode = true; var i_am_muted = false; var role = 0;
 var ho = document.location.href.split('#'); var homee = ho[1] && ho[1].length ? ho[1].toUpperCase() : w[0]; if (ho[1] && ho[1].length && ho[1] !== homee) document.location.href = ho[0] + '#' + homee;
 const cine = homee === 'GREENHALL' || homee === 'REDHALL' || homee === 'BLUEHALL' || w[0] == 'cine' ||  w[0] == 'cinema' ? true : false;
 const true_cine =  w[0] == 'cine' ||  w[0] == 'cinema' ? true : false;
@@ -55,6 +55,10 @@ const is_ipaddr = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]
 
 var currRoom = 'A';
 var num_rooms = 1;
+
+var i_am_viewer = true;
+var room_limit = 0; 
+var pcounter = 0;
 
 // required in conferenceroom.js, set in checkDeviceSupport.js
 
@@ -89,7 +93,7 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44cl"></script>
+<script src="./js/a12.js?ver=1.44dI"></script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />
@@ -250,7 +254,7 @@ const city_or_main = 1;
 	top: -68vh;
 	margin:0 auto 0 auto;
  	display: flex;
- 	flex-direction: column;
+ 	flex-direction: column-reverse;
  	gap: 5px;
  }
  .mww {
@@ -284,7 +288,7 @@ const city_or_main = 1;
         z-index:99;
         margin:0 auto;
         width:72%;
-	min-width:360px;
+	min-width:390px;
         top:-12px;
 	!border:1px solid #090;
  }
@@ -296,8 +300,8 @@ const city_or_main = 1;
  }
  .bigO {
 	float:left;
-        width:40px;
-        height:38px;
+        width:44px;
+        height:42px;
         line-height:42px;
         font-size:36px;
         margin:8px 4px;
@@ -1838,7 +1842,7 @@ var viewports = {
 
 		
 		andro: 'initial-scale=0.68, width: device-width, user-scalable=no',
-		narrow: 'initial-scale=0.75, width: device-width, user-scalable=no',
+		narrow: 'initial-scale=0.68, width: device-width, user-scalable=no',
 		very_narrow: 'initial-scale=0.55, width: device-width, user-scalable=no'
 	};
 
@@ -1862,6 +1866,11 @@ viewport_set();
 window.onresize = function() { 
 	viewport_set(); 
 }
+
+// correct rendered page finally
+
+if (navigator.userAgent.match("FxiOS")) document.id('main_container').style.marginTop='35px';
+
 </script>
 		<script async src="./es-module-shims/es-module-shims.js"></script>
 		<script type="importmap">

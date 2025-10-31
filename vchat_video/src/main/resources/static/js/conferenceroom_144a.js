@@ -32,7 +32,6 @@ var participants = {};
 var cinemaGoers = {};
 var name;
 
-var pcounter = 0;
 var real_pcnt = 0;
 var vcounter = 0;
 var i_am_guest = 0;
@@ -85,8 +84,6 @@ var just_left = '';
 var connection_is_good = 1;
 
 var new_message = 0;
-
-var i_am_viewer = true;
  
 var i_am_dummy_guest = false; //check demo dummy from join_
 
@@ -774,6 +771,14 @@ console.log('here token', tok,'val',document.id('asender').value,'name',document
 		}
 		
 		setTimeout(function() {check_locked(1)}, 5000); // give more time here to avoid slow server push to exit 
+
+		// correct the menu
+		(function() {
+//console.log('And so, here pcounter', pcounter, 'room_limit', room_limit);
+			if (pcounter >= room_limit && i_am_viewer) {if (document.id('bell')) document.id('bell').style.display = 'block';
+			if (document.id('av_toggler')) document.id('av_toggler').style.display='none';}
+		}).delay(1000);
+
 }
 
 function checkLang() {
@@ -891,10 +896,10 @@ const onNewParticipant = (request) => {
 	if (!video_hidden) {
 
 		//preparing logics in advance
-		let pctr = pcounter + 1;
-		if (pctr > room_limit - 1 && i_am_viewer) {if (document.id('bell')) document.id('bell').style.display = 'block'; if (document.id('av_toggler')) document.id('av_toggler').style.display='none';}
-
-		if (!small_device && window == window.top) resizer(pctr);
+		// let pctr = pcounter + 1;	
+		// this is done later
+		// if (pctr > room_limit - 1 && i_am_viewer) {if (document.id('bell')) document.id('bell').style.display = 'block'; if (document.id('av_toggler')) document.id('av_toggler').style.display='none';}
+		//if (!small_device && window == window.top) resizer(pctr);
 		
 		if (small_device || tablet) {
 		 // new guy
@@ -904,7 +909,7 @@ const onNewParticipant = (request) => {
 // console.log('name:', request.name, 'mode:', request.mode, 'myrole:', myrole);
 	   	
 		receiveVideo(request.name, request.mode, myrole);
-		
+				
 		(function() {if (document.id(request.name)) {document.id(request.name).style.display='block'; document.id(request.name).fade(1);}}).delay(500); //need this animation because the new video appears under the row, so we hide it
 		
 		//set new sound according to all_muter
@@ -1117,7 +1122,7 @@ const onExistingViewers = (msg) => {
 				x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 
 				/*theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {localStream.getAudioTracks()[0].enabled = localStream.getAudioTracks()[0].enabled === true ? false : true; document.id(\'sndm_' + f + '\').innerText = localStream.getAudioTracks()[0].enabled === true ? \'\' : \'X\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';*/
-				theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="setCookie(\'disconnect\', true, 0.1); rejoin();"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';	
+				theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="let yon = confirm(\'Disconnect and reload?\');if (yon) {let n = document.id(\'name\').value; setCookie(\'disconnect\', true, 1); delete localStream; delete cinemaGoers[n].rtcPeer; delete cinemaGoers[n]; location.reload()}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';	
 		  	   }
          		});		
 		}
@@ -1216,7 +1221,6 @@ const onExistingParticipants = (msg) => {
 
   let myname = document.id('name').value;
   let cRoom= ''; 
-
    
    if (role == 0 && hack) role = 1;
 
@@ -1230,7 +1234,7 @@ const onExistingParticipants = (msg) => {
    
    for (i = 1; i <= num_rooms; i++) {
    	sym = i == 2 ? 'B' : i == 3 ? 'C' : i == 4 ? 'D' : i == 5 ? 'E' : i == 6 ? 'F' : sym;
-	// let addon = sym == currRoom ? '&nbsp;&nbsp;<span style="color:#fed;border:0px solid #fed; padding:3px">ROOM' + i + '</span>&nbsp;&nbsp;' : '&nbsp;&nbsp;<span style="color:#9cf;cursor:pointer; padding:3px" onclick="currRoom = \'' + sym + '\';/*console.log(\'sym\',currRoom);*/(function(){document.id(\'bg_switch\').click()}).delay(500);flashText_and_rejoin(\'SKIP TO ROOM \' + currRoom);">ROOM' + i + '</span>&nbsp;&nbsp;';
+
 	let addon = sym == currRoom ? '&nbsp;&nbsp;<span style="color:#fed;border:0px solid #fed; padding:3px">' + roomees_arr[i-1] + '</span>&nbsp;&nbsp;' : '&nbsp;&nbsp;<span style="color:#9cf;cursor:pointer; padding:3px" onclick="currRoom = \'' + sym + '\'; cRoom = \'' + roomees_arr[i-1] + '\';/*console.log(\'sym\',currRoom);(function(){document.id(\'bg_switch\').click()}).delay(500);*/flashText_and_rejoin(\'SKIP TO \' + cRoom);">\"' + roomees_arr[i-1] + '\"</span>&nbsp;&nbsp;';
  
 	room_sel = room_sel + addon;
@@ -1241,15 +1245,158 @@ const onExistingParticipants = (msg) => {
    if (num_rooms === 5) document.id('room_selector_box').style.left='-80px';
    if (num_rooms > 5) document.id('room_selector_box').style.left='-135px';
 
-   /*if (num_rooms < 4) document.id('room_selector_box').style.left='-30px';
-   if (num_rooms === 4) document.id('room_selector_box').style.left='-55px';
-   if (num_rooms === 5) document.id('room_selector_box').style.left='-120px';
-   if (num_rooms > 5) document.id('room_selector_box').style.left='-180px';
-   */
-   
    document.id('room_selector').innerHTML = room_sel;
 
    if (temporary && role == 0) role = 3;
+
+//
+   if (msg.data) {
+	   
+	   cinemaEnabled = false; num_cinemas = 0;
+	   let top_buf = 0;
+	   for (var i = 0; i < msg.data.length; i++) {
+		var chu = msg.data[i].split('_|_');
+
+		let f = chu[0];
+		let s = chu[1];
+		let t = chu[2];
+		let ac = chu[3];
+		let a = chu[4];
+
+//console.log('here f is', f, 's is', s, 'a', a);		
+		let na = chu[0].split('_');
+		
+		if (s === 'c') {cinemaEnabled = true; num_cinemas += 1;}
+		if (f != myname) {
+			//prepare logics in advance
+			let pctr = pcounter +1;
+			if (pctr < room_limit && role == 0) {document.id('bell').style.display = 'none'; document.id('av_toggler').style.display='block';}
+			if (pctr > room_limit - 1 && role == 0) {document.id('bell').style.display = 'block'; document.id('av_toggler').style.display='none';}
+
+			if (!small_device) resizer(pctr);
+		
+			receiveVideo(f, s, role);
+			let coo_volume = loadData(f+'_volume');
+			
+			if (document.id('slider_' + f)) document.id('slider_' + f).value = coo_volume;
+			if (document.id('video-' + f)) document.id('video-' + f).volume = coo_volume;
+			
+			(function() {if (document.id(f)) {document.id(f).style.display='block'; document.id(f).fade(1);}}).delay(500);//need this animation because the new video appears under the row, so we hide it
+			
+			
+		} else {
+			var lang = getCookie('lang');
+			if (t.length && (lang === null || lang === 'null')) {
+				let ar = /, AR$/.test(t);
+				let br = /, BR$/.test(t);
+				let ru = /, RU$/.test(t);
+				
+				if (ar) {ctr = 2} else {if (br) {ctr = 5} else {if (ru) {ctr = 1} else {}}}
+				change_lang(altlang[ctr]);
+			}
+		}
+		
+		if (t.length && document.id('loco_' + f) && !ValidateIPaddress(t)) {
+			document.id('loco_' + f).innerHTML = t;
+			document.id('loco_' + f).style.display='block';
+			document.id('loco_' + f).fade(1);			
+		}		
+
+		if (cine) {
+			(function() {if (document.id('loco_' + f)) document.id('loco_' + f).fade(0); if (document.id('span_' + f))document.id('span_' + f).fade(0);}).delay(2000);
+		}
+				
+		if (document.id('acco_' + f) && ValidateAccountId(ac)) {
+			document.id('acco_' + f).style.display='block';
+			
+			document.id('acco_' + f).fade(1);
+			document.id('acco_' + f).onclick = function() {
+				copy(ac); flashText('copied '+ na[0]);
+				request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => {
+					setTimeout(function() {
+						if (document.id('removerA')) {document.id('removerA').innerHTML = 'Error: Service unavailable';
+						(function() {document.id('removerA').fade(0)}).delay(1000);}
+					}, 10000);					
+					(function() {
+						if (document.id('sp_balance')){
+								document.id('sp_balance').style.display='block';
+								document.id('sp_balance').src=sp_container_url+'/?acc='+data;
+						}
+					}).delay(1000);
+					document.id('sp_container').style.display = 'block'; sp_shown = 1; 
+					ch_int = setInterval(function() { 
+						if (document.id('sp_balance')) {
+							document.id('sp_balance').style.display='block';
+							document.id('sp_balance').src = sp_container_url + '/?acc=' + data;
+						}
+					}, 300000);	  
+				});				
+			}
+			if (document.id('sp_container' && sp_shown) && document.id('sp_container').style.display != 'block') document.id('acco_' + f).style.visibility='hidden';			
+		}	
+		
+		//if (document.id('anno_' + f) && ValidateAnno(a)) {
+		if (document.id('anno_' + f)) {
+			//console.log("For:", f, "anno:", a);
+			let arra = a.split('@#%');
+			if (arra.length == 2) {
+				
+				document.id('anno_' + f).innerHTML = "<select id='selector_" + f + "' onchange='handleFileSelectChange(this.options[this.selectedIndex].text)' onmouseover='toggleOpacity(this.parentNode)' onmouseout='toggleOpacity(this.parentNode)'></select>";
+				let cs = arra[1] || 0;
+				let arr = [];
+				let buf = arra[0].substring(2,arra[0].length-2);
+				//console.log('buf is', buf)
+				arr = buf.split('","');
+				curSelInd = cs
+				let fi = arr[curSelInd];
+				arr.splice(curSelInd,1);
+				arr.unshift(fi);
+				
+				curMovie = arr[0];
+
+				let optionList = document.id('selector_' + f).options;
+				let lim = cinemaEnabled ? 1 : arr.length
+				for (i=0; i < lim; i++) {
+					//arr[i].replace(/["']/g,'');
+					optionList.add(new Option(arr[i], i))
+				}
+		
+			} else {
+	  			if (document.id('anno_' + f)) {
+					document.id('anno_' + f).innerHTML = a;
+	  			}
+			}
+			
+			if (a && a.length) {
+				document.id('anno_' + f).style.display='block';			
+				document.id('anno_' + f).fade(1);
+			}
+			
+			if (s === 'c') setTimeout(function() {if (document.id('anno_' + f)) document.id('anno_' + f).fade(0.02);}, 2000);
+			setTimeout(function() {if (document.id('one-' + f)) document.id('one-' + f).fade(0.5);}, 3000);
+			document.id('room-header').fade(0);		
+		}
+		
+		/*if (document.id('lol_' + f) && a.length && s === 'p' && window.top == window && !small_device) {
+		
+			document.id('lol_' + f).innerHTML = 'STOP/PLAY';
+			document.id('lol_' + f).style.display='block';			
+			document.id('lol_' + f).fade(1);
+			document.id('rew_' + f).innerHTML = '<< -10s';
+			document.id('rew_' + f).style.display='block';			
+			document.id('rew_' + f).fade(1);
+		}*/
+		
+		// disabled user controls for now --ash oct'23
+	   } //for
+	   if (small_device || tablet) {
+			// other guys			
+			document.id('participants').style.top = narrow ? '-78vh' : '-68vh';		
+
+	   }
+   } // msg.data
+
+//
 	
    if (role == 1 || role == 2 || role == 3)  {
 
@@ -1593,12 +1740,12 @@ console.log('doing mic mix in normal mode');
 
          	if (small_device)  document.id(myname).style.float = 'none';
 		
-		participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
+		participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options_aonly, function(error) {
                   if(error) {
 			var ff = new RegExp('closed','ig');
 			if (error.toString().match(ff)) {
 			} else {
-			  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
+			  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options_aonly,
                           function (error) {
                                         if(error) {
                                                 return console.error(error);
@@ -1638,151 +1785,6 @@ console.log('doing mic mix in normal mode');
 	(function() {document.id(myname).style.display='block'; document.id(myname).fade(1);}).delay(500);//need this animation because the new video appears under the row, so we hide it
    }// if role
 
-   if (msg.data) {
-	   
-	   cinemaEnabled = false; num_cinemas = 0;
-	   let top_buf = 0;
-	   for (var i = 0; i < msg.data.length; i++) {
-		var chu = msg.data[i].split('_|_');
-
-		let f = chu[0];
-		let s = chu[1];
-		let t = chu[2];
-		let ac = chu[3];
-		let a = chu[4];
-
-//console.log('here f is', f, 's is', s, 'a', a);		
-		let na = chu[0].split('_');
-		
-		if (s === 'c') {cinemaEnabled = true; num_cinemas += 1;}
-		if (f != myname) {
-			//prepare logics in advance
-			let pctr = pcounter +1;
-			if (pctr < room_limit && role == 0) {document.id('bell').style.display = 'none'; document.id('av_toggler').style.display='block';}
-			if (pctr > room_limit - 1 && role == 0) {document.id('bell').style.display = 'block'; document.id('av_toggler').style.display='none';}
-
-			if (!small_device) resizer(pctr);
-		
-			receiveVideo(f, s, role);
-			let coo_volume = loadData(f+'_volume');
-			
-			if (document.id('slider_' + f)) document.id('slider_' + f).value = coo_volume;
-			if (document.id('video-' + f)) document.id('video-' + f).volume = coo_volume;
-			
-			(function() {if (document.id(f)) {document.id(f).style.display='block'; document.id(f).fade(1);}}).delay(500);//need this animation because the new video appears under the row, so we hide it
-			
-			
-		} else {
-			var lang = getCookie('lang');
-			if (t.length && (lang === null || lang === 'null')) {
-				let ar = /, AR$/.test(t);
-				let br = /, BR$/.test(t);
-				let ru = /, RU$/.test(t);
-				
-				if (ar) {ctr = 2} else {if (br) {ctr = 5} else {if (ru) {ctr = 1} else {}}}
-				change_lang(altlang[ctr]);
-			}
-		}
-		
-		if (t.length && document.id('loco_' + f) && !ValidateIPaddress(t)) {
-			document.id('loco_' + f).innerHTML = t;
-			document.id('loco_' + f).style.display='block';
-			document.id('loco_' + f).fade(1);			
-		}		
-
-		if (cine) {
-			(function() {if (document.id('loco_' + f)) document.id('loco_' + f).fade(0); if (document.id('span_' + f))document.id('span_' + f).fade(0);}).delay(2000);
-		}
-				
-		if (document.id('acco_' + f) && ValidateAccountId(ac)) {
-			document.id('acco_' + f).style.display='block';
-			
-			document.id('acco_' + f).fade(1);
-			document.id('acco_' + f).onclick = function() {
-				copy(ac); flashText('copied '+ na[0]);
-				request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => {
-					setTimeout(function() {
-						if (document.id('removerA')) {document.id('removerA').innerHTML = 'Error: Service unavailable';
-						(function() {document.id('removerA').fade(0)}).delay(1000);}
-					}, 10000);					
-					(function() {
-						if (document.id('sp_balance')){
-								document.id('sp_balance').style.display='block';
-								document.id('sp_balance').src=sp_container_url+'/?acc='+data;
-						}
-					}).delay(1000);
-					document.id('sp_container').style.display = 'block'; sp_shown = 1; 
-					ch_int = setInterval(function() { 
-						if (document.id('sp_balance')) {
-							document.id('sp_balance').style.display='block';
-							document.id('sp_balance').src = sp_container_url + '/?acc=' + data;
-						}
-					}, 300000);	  
-				});				
-			}
-			if (document.id('sp_container' && sp_shown) && document.id('sp_container').style.display != 'block') document.id('acco_' + f).style.visibility='hidden';			
-		}	
-		
-		//if (document.id('anno_' + f) && ValidateAnno(a)) {
-		if (document.id('anno_' + f)) {
-			//console.log("For:", f, "anno:", a);
-			let arra = a.split('@#%');
-			if (arra.length == 2) {
-				
-				document.id('anno_' + f).innerHTML = "<select id='selector_" + f + "' onchange='handleFileSelectChange(this.options[this.selectedIndex].text)' onmouseover='toggleOpacity(this.parentNode)' onmouseout='toggleOpacity(this.parentNode)'></select>";
-				let cs = arra[1] || 0;
-				let arr = [];
-				let buf = arra[0].substring(2,arra[0].length-2);
-				//console.log('buf is', buf)
-				arr = buf.split('","');
-				curSelInd = cs
-				let fi = arr[curSelInd];
-				arr.splice(curSelInd,1);
-				arr.unshift(fi);
-				
-				curMovie = arr[0];
-
-				let optionList = document.id('selector_' + f).options;
-				let lim = cinemaEnabled ? 1 : arr.length
-				for (i=0; i < lim; i++) {
-					//arr[i].replace(/["']/g,'');
-					optionList.add(new Option(arr[i], i))
-				}
-		
-			} else {
-	  			if (document.id('anno_' + f)) {
-					document.id('anno_' + f).innerHTML = a;
-	  			}
-			}
-			
-			if (a && a.length) {
-				document.id('anno_' + f).style.display='block';			
-				document.id('anno_' + f).fade(1);
-			}
-			
-			if (s === 'c') setTimeout(function() {if (document.id('anno_' + f)) document.id('anno_' + f).fade(0.02);}, 2000);
-			setTimeout(function() {if (document.id('one-' + f)) document.id('one-' + f).fade(0.5);}, 3000);
-			document.id('room-header').fade(0);		
-		}
-		
-		/*if (document.id('lol_' + f) && a.length && s === 'p' && window.top == window && !small_device) {
-		
-			document.id('lol_' + f).innerHTML = 'STOP/PLAY';
-			document.id('lol_' + f).style.display='block';			
-			document.id('lol_' + f).fade(1);
-			document.id('rew_' + f).innerHTML = '<< -10s';
-			document.id('rew_' + f).style.display='block';			
-			document.id('rew_' + f).fade(1);
-		}*/
-		
-		// disabled user controls for now --ash oct'23
-	   } //for
-	   if (small_device || tablet) {
-			// other guys			
-			document.id('participants').style.top = narrow ? '-78vh' : '-68vh';		
-
-	   }
-   } // msg.data
    
    request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => {
      if (role == 0 && cinemaEnabled && !data.length) {
@@ -2006,7 +2008,7 @@ const setGuru = (request) => {
 			document.id('room').style.marginTop = '37px';
 			hack = false; //?!
 			i_am_viewer = true;
-			flashText_and_rejoin('AUDIO-ONLY');
+			flashText_and_rejoin('BACK TO AUDIENCE!');
 		}
 //	}).catch(err => console.log(err));
 }
