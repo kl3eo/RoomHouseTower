@@ -115,6 +115,9 @@ const swap_url = "https://coins.room-house.com";
 
 //const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window.innerWidth <=1024 || window != window.top ? true : false; // set desktop like small_device
 const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window != window.top ? true : false;
+
+// if (document.id('zero_pcounter')) document.id('zero_pcounter').className = small_device ? document.id('zero_pcounter').className : 'participant solo main';
+
 const tablet = small_device && screen.width >= 960 ? true : false;
 const notebook = screen.height <= 800 ? true : false;
 
@@ -361,7 +364,7 @@ screen.orientation.onchange = function (){
 
 function rejoin(){
 	already_being_played = false; // ?! to prevent local sound from played video
-	leaveRoom(); if (i_am_viewer) leaveRoom(); register();
+	leaveRoom(); if (i_am_viewer) leaveRoom(); register(); //hack?!
 }
 
 function check_locked(par) { // let guru/user keep connected on server resets, guest leave
@@ -639,7 +642,7 @@ const register_body = (ro) => {
 		}).delay(1000);
 		
 		document.id('phones').style.display = 'block';
-		document.id('phones').style.visibility = 'visible';
+		//document.id('phones').style.visibility = 'visible'; // or it will absorb all clicks
 		document.id('cr').style.display = 'none';
 		document.id('av_selector').style.display = 'block';
 		document.id('poll').style.display = 'block';
@@ -742,6 +745,8 @@ console.log('here token', tok,'val',document.id('asender').value,'name',document
 		(function() {dummies = true;}).delay(3000);
 		
 		document.body.scrollTop = document.documentElement.scrollTop = 0;
+				
+		// document.body.focus();
 		
 		// IMPORTANT: get SDP_ALREADY_NEGOTIATED for camera auto re-activation, so leave it only for players?!
 
@@ -774,10 +779,12 @@ console.log('here token', tok,'val',document.id('asender').value,'name',document
 
 		// correct the menu
 		(function() {
-//console.log('And so, here pcounter', pcounter, 'room_limit', room_limit);
-			if (pcounter >= room_limit && i_am_viewer) {if (document.id('bell')) document.id('bell').style.display = 'block';
-			if (document.id('av_toggler')) document.id('av_toggler').style.display='none';}
-		}).delay(1000);
+//console.log('And so, here pcounter', pcounter, 'room_limit', room_limit, 'viewer', i_am_viewer);
+			if (pcounter >= room_limit && i_am_viewer) {
+				if (document.id('av_toggler')) document.id('av_toggler').style.display='none';
+				if (document.id('bell')) document.id('bell').style.display = 'block';
+			}
+		}).delay(3000); // give more time to calc param values - or show the incorrect bell
 
 }
 
@@ -852,6 +859,8 @@ const onNewParticipant = (request) => {
 
   if (request.currRoom && currRoom != request.currRoom) return false; // do not connect those coming to a room other than mine current
   
+  if (document.id('zero_pcounter')) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}
+    
   if (request.ng) {if (document.id('num_guests')) document.id('num_guests').innerHTML = request.ng;}
 	
 	let myrole = role;
@@ -907,7 +916,7 @@ const onNewParticipant = (request) => {
 		}
 		
 // console.log('name:', request.name, 'mode:', request.mode, 'myrole:', myrole);
-	   	
+		   	
 		receiveVideo(request.name, request.mode, myrole);
 				
 		(function() {if (document.id(request.name)) {document.id(request.name).style.display='block'; document.id(request.name).fade(1);}}).delay(500); //need this animation because the new video appears under the row, so we hide it
@@ -1183,6 +1192,8 @@ const set_guru = (par, who) => {
 
 function drop_guest(who) {
 
+	if (who == document.id('name').value) {flashText('this is you');return;}
+	
 	fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {
 		let role = respo || 0;
 
@@ -1251,7 +1262,7 @@ const onExistingParticipants = (msg) => {
 
 //
    if (msg.data) {
-	   
+	   if (document.id('zero_pcounter')) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}	   
 	   cinemaEnabled = false; num_cinemas = 0;
 	   let top_buf = 0;
 	   for (var i = 0; i < msg.data.length; i++) {
@@ -1740,12 +1751,12 @@ console.log('doing mic mix in normal mode');
 
          	if (small_device)  document.id(myname).style.float = 'none';
 		
-		participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options_aonly, function(error) {
+		participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
                   if(error) {
 			var ff = new RegExp('closed','ig');
 			if (error.toString().match(ff)) {
 			} else {
-			  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options_aonly,
+			  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options,
                           function (error) {
                                         if(error) {
                                                 return console.error(error);
@@ -1785,6 +1796,8 @@ console.log('doing mic mix in normal mode');
 	(function() {document.id(myname).style.display='block'; document.id(myname).fade(1);}).delay(500);//need this animation because the new video appears under the row, so we hide it
    }// if role
 
+   //inform viewers there are no participants
+   (function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter')) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
    
    request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => {
      if (role == 0 && cinemaEnabled && !data.length) {
@@ -2130,8 +2143,7 @@ function setAnno(request) {
 	
 	document.id('anno_' + request.participant).style.display='block';			
 	document.id('anno_' + request.participant).fade(1); /*if (cine) setTimeout(function() {document.id('anno_' + request.participant).fade(0.02);}, 2000);*/
-		 
-	//setTimeout(function() {const boxes = document.querySelectorAll('.annos'); boxes.forEach(box => {box.style.opacity = 0.02;});}, 3000);
+
 	document.id('room-header').fade(0);	
 }
 
@@ -2371,6 +2383,9 @@ const onParticipantLeft = (request) => {
 
 		//console.log('dispose 1 in left: real', real_pcnt);
 		if (pcounter < room_limit) {document.id('bell').style.display = 'none'; document.id('av_toggler').style.display='block';}
+		
+		//inform viewers there are no participants
+		(function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter')) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
 
 		delete g.video; //?!
 

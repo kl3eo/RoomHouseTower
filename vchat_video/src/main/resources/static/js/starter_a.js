@@ -36,7 +36,7 @@ var oldColor = null;
 var selectedFile = null;
 var movieList_names = [];
 
-var loado = ''; var warning = ''; var waiter = ''; var sorry = ''; var hola = ''; var caller = ''; var requ = ''; var creatu = ''; var badger = ''; var learner = ''; var morer = ''; var hea = ''; var now = ''; var today = ''; var roo = ''; var buy = ''; var helpcapo = '';
+var loado = ''; var warning = ''; var waiter = ''; var sorry = ''; var hola = ''; var caller = ''; var requ = ''; var creatu = ''; var badger = ''; var learner = ''; var morer = ''; var noner = ''; var hea = ''; var now = ''; var today = ''; var roo = ''; var buy = ''; var helpcapo = '';
 var chat_shown = 1;
 
 var temporary = 0;
@@ -97,7 +97,7 @@ function change_lang(l) {
 	if (document.id('rightlab')) document.id('rightlab').innerHTML=right_label.get(l);
 	if (document.id('dummy_p')) document.id('dummy_p').innerHTML=du_.get(l);
 	if (document.id('dummy2_p')) document.id('dummy2_p').innerHTML=du2_.get(l);
-	//if (document.id('locked_w')) document.id('locked_w').innerHTML=lo_.get(l);
+	if (document.id('zero_pcounter')) document.id('zero_pcounter').innerHTML = noner_.get(l);
 		
 	warning = warner.get(l);
 	waiter = waiter_.get(l);
@@ -110,12 +110,12 @@ function change_lang(l) {
 	badger = badger_.get(l);
 	learner = learner_.get(l);
 	morer = morer_.get(l);
+	noner = noner_.get(l);
 	hea = hea_.get(l);
 	now = now_.get(l);
 	today = today_.get(l);
-	//helpcapo = he_.get(l);
-	roo = roo_.get(l); roo = roo.match(new RegExp('room-house','g')) ? '' : roo;// hack --ash
-	//buy = buy_.get(l);	
+
+	roo = roo_.get(l); roo = roo.match(new RegExp('room-house','g')) ? '' : roo;// hack --ash	
 		
 	if (typeof(mod1) != 'undefined' && mod1 !== null) mod1.content.innerHTML = about_content.get(l);
 	if (typeof(mod2) != 'undefined' && mod2 !== null) mod2.content.innerHTML = help_content.get(l);
@@ -152,13 +152,14 @@ function checkWebRTC() {
 function toggleHeader(i) {
 
 		let role = 1; //hack ash
-		if (i == 1 && role == 1 && aonly)  {
+		if (!aonly) flashText('Switch off video!');
+		if (i == 1 && role == 1 && aonly && document.id('room-header').style.opacity != 0)  {
 			document.id('room-header').style.color = document.id('room-header').style.color == 'rgb(153, 204, 255)' ? oldColor : '#9cf';
 			document.id('room-header-file').style.display = document.id('room-header-file').style.display == 'block' ? 'none' : 'block';
 			playSomeMusic = playSomeMusic == true ? false : true;
 			setCookie('player', playSomeMusic);
 		}
-		if (i == 2 && role == 1 && aonly)  {
+		if (i == 2 && role == 1 && aonly && document.id('room-header').style.opacity != 0)  {
 			document.id('room-header-file').style.display='none';
 			document.id('room-header').style.color = document.id('room-header').style.color == 'rgb(153, 255, 204)' ? oldColor : '#9fc';
 			shareSomeScreen = shareSomeScreen == true ? false : true;
@@ -207,13 +208,13 @@ function clearAllCookies() {
 
 function flashText(t, tt) {
 	let ti = tt ? tt : 1000;
-	document.id('phones').innerHTML = t; document.id('phones').fade(1); (function(){document.id('phones').fade(0);}).delay(ti);
+	document.id('phones').innerHTML = t; document.id('phones').style.visibility = 'visible'; document.id('phones').fade(1); (function(){document.id('phones').fade(0)}).delay(ti);(function(){document.id('phones').style.visibility = 'hidden';}).delay(2*ti);
 }
 
 function flashText_and_rejoin(t) {
 	//SDP_END_POINT_ALREADY_NEGOTIATED does not allow to change media as in showMeAsParticipant() -- so in present we leave room and register again
-	document.id('room-header').style.display = 'none';document.id('room-header').fade(0); document.id('phones').innerHTML = t; document.id('phones').fade(1); if (i_am_viewer || true) {leaveRoom(); register();} else {/*showMeAsParticipant();*/}
-	(function(){document.id('phones').fade(0);}).delay(1000);
+	document.id('room-header').style.display = 'none';document.id('room-header').fade(0); document.id('phones').innerHTML = t; document.id('phones').style.visibility = 'visible'; document.id('phones').fade(1); if (i_am_viewer || true) {leaveRoom(); register();} else {/*showMeAsParticipant();*/}
+	(function(){document.id('phones').fade(0);}).delay(1000);(function(){document.id('phones').style.visibility = 'hidden';}).delay(2000);
 }
 
 function resizer(pctr) {
@@ -389,7 +390,6 @@ const ed = () => { //code to run on receive message from join_ frame
  if (document.id('hea')) document.id('hea').fade(0);
  if (document.id('bstats')) document.id('bstats').fade(0);
 
- 
  //document.id('phones').fade(0);
  if (!normal_mode) {
 
@@ -415,9 +415,7 @@ const ed = () => { //code to run on receive message from join_ frame
 	document.id('streamer').style.display = 'none';
 	
 	document.id('house').style.display = 'block'; document.id('house').style.visibility='visible';
-	
-	if (small_device && document.id('second_logger')) (function() {document.id('second_logger').style.visibility = 'hidden';document.id('second_logger').style.display = 'block';}).delay(2000);
-	
+		
 	let bgr = homee == 'REDHALL' ? 'red' : homee == 'BLUEHALL' ? 'blue' : homee == 'GREENHALL' ? 'green' : 'empty';
 
 	document.id('city').style.background = bgr != 'empty' ?  'url(/img/' + bgr + '_screen.jpg) center center no-repeat' : null;
@@ -508,7 +506,6 @@ e.stopPropagation();
 	}
   }
   
-  //document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); if (shareSomeStream) {document.id('room-header').style.display='none'; grun()} else {toggleHeader(1)}});
   document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(1);});
   document.id('room-header').addEventListener('dblclick', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(2);});
 
@@ -545,7 +542,8 @@ e.stopPropagation();
 
  } //obj.name
 
- document.id('phones').onclick = '';document.id('phones').style.cursor = 'none';
+ //document.id('phones').onclick = '';
+ //document.id('phones').style.cursor = 'none';
  
  //if (cine && role == 1) {} else { document.id('container').fade(1);} // ok with 3D
  if (cine) {} else { document.id('container').fade(1);} // ok with 3D if not cine
@@ -800,7 +798,7 @@ if (!snd_clicked) {soundEffect.src = 'data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFg
 
 const cli2 = () => {let sem  = window.innerWidth > 1024 ? '7' : '';
 fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo; if (pcounter < room_limit) hack = true; if (role == 0 && hack) role = 1; if ((!cammode || cammode == 2) && (!playSomeMusic && !shareSomeScreen)) {if (role == 1 || role == 2 || temporary) {cammode = 1; setCookie('fmode',0,144000); setCookie('av', true, 144000); aonly = 0; document.id('av_toggler').className = "bigO av_toggler_f"; document.id('fcam').className = "bigO fcam_f"; document.id('bcam').className = "bigO bcam";
- flashText_and_rejoin('DEMO: VIDEO OFF!');} else {flashText(caller + '&nbsp;<img style="margin-top:-72px;" src=/icons/bell' + sem + '2.png>'); document.id('fcam').className = "bigO fcam";}} else {if (!playSomeMusic && !shareSomeScreen) {cammode = 0; document.id('fcam').className = "bigO fcam"; setCookie('av', false, 144000); aonly = 1;  flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');} else {if (playSomeMusic) {flashText('PLAYING VIDEO! STOP?')} else {flashText('SHARING SCREEN! STOP?')}}}}).catch(err => console.log(err));
+ flashText_and_rejoin('FRONT CAM!');} else {flashText(caller + '&nbsp;<img style="margin-top:-72px;" src=/icons/bell' + sem + '2.png>'); document.id('fcam').className = "bigO fcam";}} else {if (!playSomeMusic && !shareSomeScreen) {cammode = 0; document.id('fcam').className = "bigO fcam"; setCookie('av', false, 144000); aonly = 1;  flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');} else {if (playSomeMusic) {flashText('PLAYING VIDEO! STOP?')} else {flashText('SHARING SCREEN! STOP?')}}}}).catch(err => console.log(err));
 }
 // DEMO: VIDEO OFF
 async function cli3() {
@@ -808,7 +806,7 @@ const devices = await navigator.mediaDevices.enumerateDevices();
 const videoDevices = devices.filter((device) => device.kind === "videoinput");
 if (videoDevices.length < 2) {flashText('NO BACK CAMERA!');return;}
 let sem  = window.innerWidth > 1024 ? '7' : '';
-fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo;  if (pcounter < room_limit || (pcounter == room_limit && !i_am_viewer)) hack = true; if (role == 0 && hack) role = 1; if ((!cammode || cammode == 1) && (!playSomeMusic && !shareSomeScreen)) {if (role == 1 || role == 2 || temporary) {cammode = 2; setCookie('fmode',1,144000); setCookie('av', true, 144000); aonly = 0; document.id('av_toggler').className = "bigO av_toggler_f"; document.id('fcam').className = "bigO fcam"; document.id('bcam').className = "bigO bcam_f"; flashText_and_rejoin('DEMO: VIDEO OFF!');} else {flashText(caller + '&nbsp;<img style="margin-top:-72px;" src=/icons/bell' + sem + '2.png>'); document.id('bcam').className = "bigO bcam";}} else  {if (!playSomeMusic && !shareSomeScreen) {cammode = 0; document.id('bcam').className = "bigO bcam"; setCookie('av', false, 144000); aonly = 1; flashText_and_rejoin('AUDIO-ONLY');setCookie('player', '');} else {if (playSomeMusic) {flashText('PLAYING VIDEO! STOP?')} else {flashText('SHARING SCREEN! STOP?')}}}}).catch(err => console.log(err));
+fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo;  if (pcounter < room_limit || (pcounter == room_limit && !i_am_viewer)) hack = true; if (role == 0 && hack) role = 1; if ((!cammode || cammode == 1) && (!playSomeMusic && !shareSomeScreen)) {if (role == 1 || role == 2 || temporary) {cammode = 2; setCookie('fmode',1,144000); setCookie('av', true, 144000); aonly = 0; document.id('av_toggler').className = "bigO av_toggler_f"; document.id('fcam').className = "bigO fcam"; document.id('bcam').className = "bigO bcam_f"; flashText_and_rejoin('BACK CAM!');} else {flashText(caller + '&nbsp;<img style="margin-top:-72px;" src=/icons/bell' + sem + '2.png>'); document.id('bcam').className = "bigO bcam";}} else  {if (!playSomeMusic && !shareSomeScreen) {cammode = 0; document.id('bcam').className = "bigO bcam"; setCookie('av', false, 144000); aonly = 1; flashText_and_rejoin('AUDIO-ONLY');setCookie('player', '');} else {if (playSomeMusic) {flashText('PLAYING VIDEO! STOP?')} else {flashText('SHARING SCREEN! STOP?')}}}}).catch(err => console.log(err));
 }
 
 const cli4 = () => {
@@ -826,7 +824,7 @@ document.id('subcontrols').fade(1);}).delay(500);}}
 }
 
 const cli6 = () => {let sem  = window.innerWidth > 1024 ? '7' : '';
-fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo; if (pcounter < room_limit) hack = true; if (role == 0 && hack) role = 1; if (aonly) { already_being_played = 0; document.id('room-header').style.color = oldColor; document.id('room-header-file').style.display = 'none'; document.id('av_toggler').className = "bigO av_toggler_f"; if (role == 1 || role == 2 || temporary) {setCookie('av', true, 144000); aonly = 0; flashText_and_rejoin('DEMO: VIDEO OFF!'); } else {flashText(caller + '<img style="&nbsp;margin-top:-72px;" src=/icons/bell' + sem + '2.png>');  document.id('av_toggler').className = "bigO av_toggler";}} else {if (playSomeMusic) {if (shareSomeStream) { if (document.getElementsByTagName('iframe')[7] && document.getElementsByTagName('iframe')[7].name == 'ifrr') {document.getElementsByTagName('iframe')[7].dispose();}} else {let myname = document.id('name').value; let myvideo = 'video-' + myname; if (document.id(myvideo)) {setCookie('cT_'+curMoviesList[0], document.id(myvideo).currentTime, 14400);}}} else {/*setCookie('cT_'+curMoviesList[0], null, 0);*/} cammode = 0; playSomeMusic = false; shareSomeScreen = false; shareSomeStream = false;  g.audioContext = null; document.id('av_toggler').style.color='#777'; setCookie('av', false, 144000);  setCookie('fmode', null, 0); aonly = 1; flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');}}).catch(err => console.log(err));
+fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo; if (pcounter < room_limit) hack = true; if (role == 0 && hack) role = 1; if (aonly) { already_being_played = 0; document.id('room-header').style.color = oldColor; document.id('room-header-file').style.display = 'none'; document.id('av_toggler').className = "bigO av_toggler_f"; if (role == 1 || role == 2 || temporary) {setCookie('av', true, 144000); aonly = 0; flashText_and_rejoin('VIDEO ON!'); } else {flashText(caller + '<img style="&nbsp;margin-top:-72px;" src=/icons/bell' + sem + '2.png>');  document.id('av_toggler').className = "bigO av_toggler";}} else {if (playSomeMusic) {if (shareSomeStream) { if (document.getElementsByTagName('iframe')[7] && document.getElementsByTagName('iframe')[7].name == 'ifrr') {document.getElementsByTagName('iframe')[7].dispose();}} else {let myname = document.id('name').value; let myvideo = 'video-' + myname; if (document.id(myvideo)) {setCookie('cT_'+curMoviesList[0], document.id(myvideo).currentTime, 14400);}}} else {/*setCookie('cT_'+curMoviesList[0], null, 0);*/} cammode = 0; playSomeMusic = false; shareSomeScreen = false; shareSomeStream = false;  g.audioContext = null; document.id('av_toggler').style.color='#777'; setCookie('av', false, 144000);  setCookie('fmode', null, 0); aonly = 1; flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');}}).catch(err => console.log(err));
 }
 
 const cli7 = () => {let sem  = window.innerWidth > 1024 ? '7' : '';

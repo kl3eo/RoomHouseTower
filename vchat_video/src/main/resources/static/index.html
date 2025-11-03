@@ -9,7 +9,7 @@
  
 <title>Welcome to Rumhaus</title>
    
-<link rel="styleSheet" href="style.css?ver=i" type="text/css" media="screen">
+<link rel="styleSheet" href="style.css?ver=k" type="text/css" media="screen">
 
 <!-- slider -->
 <link rel="stylesheet" href="./css/splide.min.css" />
@@ -93,7 +93,7 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44dI"></script>
+<script src="./js/a12.js?ver=1.44eo"></script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />
@@ -196,7 +196,7 @@ const city_or_main = 1;
  body {
 	!border: 1px solid #700;
 	touch-action: manipulation;
-	!height: 100dvh;
+	height: 100dvh;
  }
  #house {
  	max-width:420px;
@@ -221,6 +221,9 @@ const city_or_main = 1;
  .space {
  	width:2px
  } 
+ #room_header_container {
+ 	display: none;
+ }
  #theater_rows_boxx {
 	width:460px;
 	bottom:20vh;
@@ -415,6 +418,9 @@ const city_or_main = 1;
 }
 
 @media screen and (min-width: 1024px)  {
+ body {
+	height: 100dvh;
+ }
  #house {
  	max-width:460px;
  }
@@ -1470,7 +1476,7 @@ select:focus, input:focus, button:focus{
 <body style="background:#112;font-family:Sans;overflow-y:hidden;" onclick="cli1()">
 <div id="dbao" class=dbao><span></span></div>
 <div id="phones" class=phones><span id="loading_span"><script>let l = getCookie('lang'); loado = (l == 1) ? loado_.get('ru') : l == 2 ? loado_.get('es') : loado_.get('en'); document.write(loado);</script></span><script>let loc = window.location.hostname; let pic_ind = homee == 'GREENHALL' ? 3 : homee == 'REDHALL' ? 2 : homee == 'BLUEHALL' ?  1 : 0; let pos = screen.height < 800 ? 'top' : 'center'; let hpos = small_device && pic_ind == 0 ? 'left' : 'center'; let dt = small_device ? '' : '_dt'; document.write('<div id="ph_b" style="visibility:hidden;width:100%;height:100%;text-align:center;background:transparent url(/img/theater' + dt + pic_ind + '.jpg) ' + pos + ' ' + hpos + '  no-repeat;text-align:center;"><div id="red_banner" style="display:none;"  onclick="window.location.href = \'#REDHALL\'; homee = \'REDHALL\'; roomee = homee;"><a href="#REDHALL" style="color:#963;">#REDHALL</a><div id="red_hall_span" class="now_sho">now showing..</div></div><div id="green_banner" style="display:none;"  onclick="window.location.href = \'#GREENHALL\'; homee = \'GREENHALL\'; roomee = homee;"><a href="#GREENHALL" style="color:#396;">#GREENHALL</a><div id="green_hall_span" class="now_sho">now showing..</div></div><div id="blue_banner" style="display:none;" onclick="window.location.href = \'#BLUEHALL\'; homee = \'BLUEHALL\'; roomee = homee; "><a href="#BLUEHALL">#BLUEHALL</a><div id="blue_hall_span" class="now_sho">now showing..</div></div></div>');</script></div><!--phones-->
-<script>let wlh = small_device ? '' : window.location.hostname; document.id('phones').style.visibility = 'visible'; let disp = city_or_main ? 'block' : 'none'; document.write('<div id="city" style="position:relative;height:90vh;width:100%;text-align:center;border:0px solid #222;background:transparent url(/img/city2_' + w[0] +'.room-house.com.png) bottom center no-repeat;display:'+disp+'">');</script>
+<script>let wlh = small_device ? '' : window.location.hostname; let disp = city_or_main ? 'block' : 'none'; document.write('<div id="city" style="position:relative;height:90vh;width:100%;text-align:center;border:0px solid #222;background:transparent url(/img/city2_' + w[0] +'.room-house.com.png) bottom center no-repeat;display:'+disp+'">');</script>
 
 <div id="poll_container" class=poll_container>
   <div id="poll" class=poll>
@@ -1724,8 +1730,8 @@ if (!curIP.length && false) {
 <div id="theater_rows_boxx" style="position:relative;height:200px;margin:0 auto;background:transparent;border:0px solid #fed;display:block;"></div>
 </div><!-- city -->
 <div id="participants" style="position:relative;min-width:350px;text-align:center;z-index:1010; border: 0px solid #900;pointer-events: none;">
-	<div id="second_logger" style="width:50px;height:50px;background:url(/icons/chat2.png) center center no-repeat;display:none;z-index:33005;position:relative;" onclick="document.id('message_wrap').style.marginTop='35vh';cli5()"></div>
-</div>
+	<div id="zero_pcounter" class="participant solo main_i" style="display:none; opacity:0; background:#234; height:320px; color:#369; font-size:36px;padding-top:2vh;">NO GURU PRESENT</div>
+</div><!-- participants -->
 <div id="viewer_menu">
 <div id="sbut" class="round_button short" onclick="eventHandler(80)"><img src="/img/start48.png"></div><div id="pbut" class="round_button short" onclick="eventHandler(83)"><img src="/img/pause48.png"></div>
 <div class="round_button space" style="visibility:hidden;"></div><!-- space -->
@@ -1740,7 +1746,7 @@ if (!curIP.length && false) {
 <div id="room_selector" style="position:relative; margin:0 auto;width:360px; color:#fed;font-size:20px;opacity:1;white-space:nowrap;"></div>
 </div>
 <script src="./js/finisher_a.js"></script>
-<script>/*keep phones longer! detect slow systems? IMPORTANT - here "normal mode" is not set yet! that's why timeout is required to wait*/let pause = cine ? 4000 : 500;  let na = getCookie('name'); if (na != null && na != 'null') {document.id('phones').style.visibility='hidden'; document.id('house').style.display = 'block';} else {setTimeout(function() { if (normal_mode) {document.id('phones').style.visibility='hidden'; document.id('house').style.display = 'block'; if (document.id('loading_span')) document.id('loading_span').style.display='none';}}, pause);}</script>
+<script>/*keep phones longer! detect slow systems? IMPORTANT - here "normal mode" is not set yet! that's why timeout is required to wait*/let pause = cine ? 4000 : 500;  let na = getCookie('name'); if (na != null && na != 'null') {document.id('house').style.display = 'block';} else {setTimeout(function() { if (normal_mode) {document.id('house').style.display = 'block'; if (document.id('loading_span')) document.id('loading_span').style.display='none';}}, pause);}</script>
 
 <script>
 document.write('<iframe id="sm_niche" name=sm_niche src="" scrolling="no" class="niches" style="background:#3d1257;"></iframe>');

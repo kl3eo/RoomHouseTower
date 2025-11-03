@@ -239,8 +239,6 @@ function Participant(name, myname, mode, myrole) {
 	container.appendChild(span);
 	container.appendChild(speaker);
 	
-	//container.onclick = switchContainerClass;
-	//if (name == myname) container.onclick = shareSomeStream ? do_grun : toggleRoomHeader;
 	if (name == myname) container.onclick = toggleRoomHeader;
 	container.ondblclick = rmPtcp;
 
@@ -495,7 +493,8 @@ function Participant(name, myname, mode, myrole) {
 		//let cond3 = mic_muted;
 		// console.log('Here cond1', cond1, 'cond2',cond2, 'cond3',cond3);		  
 		  
-		  if (document.id('sndm_'+name)) {/*console.log('.. received',soundMeter.instant.toFixed(3));*/document.id('sndm_'+name).style.background = soundMeter.instant.toFixed(3) > 0.001 ? '#090' : 'transparent'; if (audioMeter === 0 && audioPeakDB < -200 && !mic_muted) { mic_muted = true; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);speaker.appendChild(document.createTextNode('X'));speaker.style.pointerEvents='none'; this.mode = 'm';} if (audioMeter > 0 && mic_muted) { mic_muted = false; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);if (!video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD0A'));if (video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD07'));speaker.style.pointerEvents='auto';}} else {clearInterval(inte)}
+		  // not working on ios ?
+		  if (document.id('sndm_'+name) && !check_iOS()) {/*console.log('.. received',soundMeter.instant.toFixed(3));*/document.id('sndm_'+name).style.background = soundMeter.instant.toFixed(3) > 0.001 ? '#090' : 'transparent'; if (audioMeter === 0 && audioPeakDB < -200 && !mic_muted) { mic_muted = true; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);speaker.appendChild(document.createTextNode('X'));speaker.style.pointerEvents='none'; this.mode = 'm';} if (audioMeter > 0 && mic_muted) { mic_muted = false; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);if (!video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD0A'));if (video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD07'));speaker.style.pointerEvents='auto';}} else {clearInterval(inte)}
 		  
 		}, 200);}
 		
@@ -507,12 +506,6 @@ function Participant(name, myname, mode, myrole) {
 
 			if(!small_device) {document.id('room-header').style.display = document.id('room-header').style.display === 'none' ? 'block' : 'none'; let a = document.id('room-header').style.display === 'none' ? 0 : 1; document.id('room-header').fade(a); document.id('room-header-file').style.display = document.id('room-header').style.display === 'none' ? 'none' : document.id('room-header-file').style.display;}
 	}
-	/*
-	function do_grun() {
-		shareSomeStream = false;
-		grun();
-	}
-	*/
 	
 	function set_Anno() {
 				who_to = name;
@@ -615,12 +608,7 @@ function Participant(name, myname, mode, myrole) {
 					document.body.scrollTop = document.documentElement.scrollTop = 0;  
 				   //});
 				}
-				//document.id('phones').innerHTML = afterBinding ? '..PLEASE RE-ENTER..' : creatu;
-				//document.id('phones').fade(1); 
-				//(function(){if (afterBinding) location.reload();}).delay(500);
 				if (afterBinding) rejoin(); 
-				//(function(){document.id('phones').fade(0);}).delay(500);
-				//rejoin(); //?!
 			}
 		});
 
@@ -696,8 +684,6 @@ function Participant(name, myname, mode, myrole) {
 
 	function toggleBigScreen(el) {
 
-			
-			//if (!isAndroid) switchContainerClass();
 			if(!isAndroid && !ios_fullscreen) {
 				document.id('house').style.visibility='hidden';
 				document.id('controls').style.display='none';
@@ -705,9 +691,7 @@ function Participant(name, myname, mode, myrole) {
 				container.style.top='0px';
 				container.style.left='0px';
 				container.style.width= window.innerHeight > window.innerWidth ? '97vw' : '98vw';
-				//document.id('second_logger').style.visibility='hidden';
-				//screen.orientation.lock('landscape');
-				// if (window.innerHeight > window.innerWidth) flashText('swipe screen');
+
 				ios_fullscreen = true;
 				document.id('room_selector').fade(0);
 			}
@@ -716,8 +700,7 @@ function Participant(name, myname, mode, myrole) {
 				container.style.width='96%';
 				document.id('house').style.visibility='visible';
 				document.id('controls').style.display='block';
-				//document.id('second_logger').style.visibility='visible';
-				//screen.orientation.unlock();
+
 				ios_fullscreen = false;
 				document.id('room_selector').fade(1);
 			}
@@ -736,9 +719,7 @@ function Participant(name, myname, mode, myrole) {
 				container.style.top='0px';
 				container.style.left='0px';
 				container.style.width= window.innerHeight > window.innerWidth ? '97vw' : '98vw';
-				//document.id('second_logger').style.visibility='hidden';
-				//screen.orientation.lock('landscape');
-				// if (window.innerHeight > window.innerWidth) flashText('swipe screen');
+
 				ios_fullscreen = true;
 			}
 			else if(ios_fullscreen) {
@@ -746,8 +727,7 @@ function Participant(name, myname, mode, myrole) {
 				container.style.width='96%';
 				document.id('house').style.visibility='visible';
 				document.id('controls').style.display='block';
-				//document.id('second_logger').style.visibility='visible';
-				//screen.orientation.unlock();
+
 				ios_fullscreen = false;
 			}
 	}

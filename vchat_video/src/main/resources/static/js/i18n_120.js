@@ -85,6 +85,15 @@ var morer_ = new Map([
    ['pt', 'more'],
 ]);
 
+var noner_ = new Map([
+   ['en', 'NO GURU PRESENT'],
+   ['ru', 'ПОКА НИКОГО'],
+   ['es', 'NO HAY GURU'],
+   ['fr', 'AUCUNE GURU'],
+   ['cn', 'NO GURU PRESENT'],
+   ['pt', 'nenhum está'],
+]);
+
 var about_content = new Map([
    ['en', '<div class="centered modal_text">Room-House is a free media network. You can setup your own Room-House node on your home computer to meet with friends, colleagues or clients in a private room: use this <a href="https://github.com/kl3eo/room-house/blob/main/xTER_VB_install.txt" target=new>how to</a> for a start; or choose an existing R-H from this <a href="https://room-house.com" target=new>big list</a>. You can write us on our <a href="https://twitter.com/RoomHouseOffic1" target=new>twitter</a>.</div>'],
   ['ru','<div class="centered modal_text">Room-House это свободная медиа сеть. Вы можете установить узел Room-House у себя на компьютере: см. <a href="https://github.com/kl3eo/room-house/blob/main/xTER_Room-House_Rus_v2_1_1.pdf" target=new>как</a> и используйте его для встреч с друзьями, коллегами, клиентами, и т.д. Вы можете написать нам в <a href="https://twitter.com/RoomHouseOffic1" target=new>Твиттер</a>.</div>'], 
