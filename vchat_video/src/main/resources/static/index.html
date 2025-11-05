@@ -93,7 +93,7 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44eo"></script>
+<script src="./js/a12.js?ver=1.44fb"></script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />
@@ -221,9 +221,10 @@ const city_or_main = 1;
  .space {
  	width:2px
  } 
- #room_header_container {
+ #room-header #room-header_box #room_header_container #room-header-file {
  	display: none;
  }
+ 
  #theater_rows_boxx {
 	width:460px;
 	bottom:20vh;
@@ -1491,7 +1492,7 @@ select:focus, input:focus, button:focus{
 
    <div id="chatter" style="display:none;font-size:36px;color:#777;cursor:pointer;border:1px solid #777;border-radius:30px;width:60px;height:60px;z-index:1300;position:absolute;background:#000;line-height:84px;margin:-36px -24px;" >&nbsp;+</div>
     <div id="audience" style="display:none;font-size:36px;color:#777;cursor:pointer;border:1px solid #777;border-radius:30px;width:60px;height:60px;z-index:1300;position:absolute;background:#000;line-height:36px;margin:-36px 138px;" onclick="document.id('message_box').style.display = document.id('message_box').style.display == 'none' ? 'block' : 'none'; document.id('audience_box').style.display = document.id('message_box').style.display == 'block' ? 'none' : 'table';"><div id="audience_numbers" style="font-size:16px;font-family:Courier;color:#369;font-weight:bold;padding-top:27px;">...</div></div>
-    <div id="antichatter" style="display:none;font-size:36px;color:#777;cursor:pointer;border:1px solid #777;border-radius:30px;width:60px;height:60px;z-index:1300;position:absolute;background:#000;line-height:78px;margin:-36px 304px;" onclick="document.id('message_box').style.display = 'none'; cli7()">x&nbsp;</div>
+    <div id="antichatter" style="display:none;font-size:36px;color:#777;cursor:pointer;border:1px solid #777;border-radius:30px;width:60px;height:60px;z-index:11300;position:absolute;background:#000;line-height:78px;margin:-36px 304px;" onclick="document.id('message_box').style.display = 'none'; cli7()">x&nbsp;</div>
 
     <div id="message_box" class="message_box"><br><br><br>...loading chat..</div>
     <div id="audience_box" class="audience_box" style="display:none;">
@@ -1730,7 +1731,7 @@ if (!curIP.length && false) {
 <div id="theater_rows_boxx" style="position:relative;height:200px;margin:0 auto;background:transparent;border:0px solid #fed;display:block;"></div>
 </div><!-- city -->
 <div id="participants" style="position:relative;min-width:350px;text-align:center;z-index:1010; border: 0px solid #900;pointer-events: none;">
-	<div id="zero_pcounter" class="participant solo main_i" style="display:none; opacity:0; background:#234; height:320px; color:#369; font-size:36px;padding-top:2vh;">NO GURU PRESENT</div>
+	<div id="zero_pcounter" class="participant solo main_i" style="display:none; opacity:0; background:#234; height:320px; color:#369; font-size:36px;padding-top:2vh;"></div>
 </div><!-- participants -->
 <div id="viewer_menu">
 <div id="sbut" class="round_button short" onclick="eventHandler(80)"><img src="/img/start48.png"></div><div id="pbut" class="round_button short" onclick="eventHandler(83)"><img src="/img/pause48.png"></div>

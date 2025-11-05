@@ -110,7 +110,7 @@ function change_lang(l) {
 	badger = badger_.get(l);
 	learner = learner_.get(l);
 	morer = morer_.get(l);
-	noner = noner_.get(l);
+	// noner = noner_.get(l);
 	hea = hea_.get(l);
 	now = now_.get(l);
 	today = today_.get(l);
@@ -151,6 +151,7 @@ function checkWebRTC() {
 
 function toggleHeader(i) {
 
+		if (small_device) return;
 		let role = 1; //hack ash
 		if (!aonly) flashText('Switch off video!');
 		if (i == 1 && role == 1 && aonly && document.id('room-header').style.opacity != 0)  {
@@ -169,12 +170,14 @@ function toggleHeader(i) {
 
 function getFile() {
 
+	if (small_device) return;
 	let fi = document.id('room-header-file').files[curSelInd];
 	if (selectedFile) URL.revokeObjectURL(selectedFile);
 	selectedFile = URL.createObjectURL(fi);
 }
 
 function getList_names() {
+	if (small_device) return;
 	movieList_names = [];
 	let fis = document.id('room-header-file').files;
 	for (var i = 0; i < fis.length; i++) {
@@ -213,7 +216,7 @@ function flashText(t, tt) {
 
 function flashText_and_rejoin(t) {
 	//SDP_END_POINT_ALREADY_NEGOTIATED does not allow to change media as in showMeAsParticipant() -- so in present we leave room and register again
-	document.id('room-header').style.display = 'none';document.id('room-header').fade(0); document.id('phones').innerHTML = t; document.id('phones').style.visibility = 'visible'; document.id('phones').fade(1); if (i_am_viewer || true) {leaveRoom(); register();} else {/*showMeAsParticipant();*/}
+	if (document.id('room-header')) {document.id('room-header').style.display = 'none';document.id('room-header').fade(0);} document.id('phones').innerHTML = t; document.id('phones').style.visibility = 'visible'; document.id('phones').fade(1); if (i_am_viewer || true) {leaveRoom(); register();} else {/*showMeAsParticipant();*/}
 	(function(){document.id('phones').fade(0);}).delay(1000);(function(){document.id('phones').style.visibility = 'hidden';}).delay(2000);
 }
 
@@ -506,8 +509,10 @@ e.stopPropagation();
 	}
   }
   
-  document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(1);});
-  document.id('room-header').addEventListener('dblclick', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(2);});
+  if (!small_device) {
+  	document.id('room-header').addEventListener('click', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(1);});
+  	document.id('room-header').addEventListener('dblclick', function(e) {e.preventDefault();e.stopPropagation(); toggleHeader(2);});
+  }
 
    
   if (role != -1  && sp_shown) {
@@ -532,9 +537,14 @@ e.stopPropagation();
 		
   }).delay(1000);
   
-  if (voting_shown || sp_shown) {(function(){document.id('room-header').style.marginTop = small_device ? '4vw' : '8vw'; document.id('room-backer').style.marginTop = small_device ? '14vw' : '8vw'; 
-  document.id('room-header').style.marginBottom = small_device ? '0px' : '20px'; document.id('room-backer').style.marginBottom = small_device ? '20px' : '40px'; 
-  if (voting_shown) {document.id('subcontrols').style.display='block'; document.id('subcontrols').fade(1);}}).delay(1000);} else  {document.id('room-header').style.marginTop = small_device ?  '0vw' : '8vw';}
+  if (voting_shown || sp_shown) {(function(){
+    if (document.id('room-header')) {
+  	document.id('room-header').style.marginTop = small_device ? '4vw' : '8vw';
+  	document.id('room-backer').style.marginTop = small_device ? '14vw' : '8vw'; 
+  	document.id('room-header').style.marginBottom = small_device ? '0px' : '20px';
+  	document.id('room-backer').style.marginBottom = small_device ? '20px' : '40px';
+    }
+  if (voting_shown) {document.id('subcontrols').style.display='block'; document.id('subcontrols').fade(1);}}).delay(1000);} else  {if (document.id('room-header')) document.id('room-header').style.marginTop = small_device ?  '0vw' : '8vw';}
 	
   stats_p.setAttribute('title', now + ' presenters');
   stats_v.setAttribute('title', now + ' guests');
@@ -578,7 +588,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 	document.id('preco').style.height = '0px';
 	document.id('main_container').style.height = '0px';
 	document.id('room').style.height = '0px';
-	document.id('room-header_box').style.height = '0px';
+	if (document.id('room-header')) document.id('room-header_box').style.height = '0px';
 	document.id('room').style.marginTop = '-57vh';
 //}
 	
@@ -824,7 +834,7 @@ document.id('subcontrols').fade(1);}).delay(500);}}
 }
 
 const cli6 = () => {let sem  = window.innerWidth > 1024 ? '7' : '';
-fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo; if (pcounter < room_limit) hack = true; if (role == 0 && hack) role = 1; if (aonly) { already_being_played = 0; document.id('room-header').style.color = oldColor; document.id('room-header-file').style.display = 'none'; document.id('av_toggler').className = "bigO av_toggler_f"; if (role == 1 || role == 2 || temporary) {setCookie('av', true, 144000); aonly = 0; flashText_and_rejoin('VIDEO ON!'); } else {flashText(caller + '<img style="&nbsp;margin-top:-72px;" src=/icons/bell' + sem + '2.png>');  document.id('av_toggler').className = "bigO av_toggler";}} else {if (playSomeMusic) {if (shareSomeStream) { if (document.getElementsByTagName('iframe')[7] && document.getElementsByTagName('iframe')[7].name == 'ifrr') {document.getElementsByTagName('iframe')[7].dispose();}} else {let myname = document.id('name').value; let myvideo = 'video-' + myname; if (document.id(myvideo)) {setCookie('cT_'+curMoviesList[0], document.id(myvideo).currentTime, 14400);}}} else {/*setCookie('cT_'+curMoviesList[0], null, 0);*/} cammode = 0; playSomeMusic = false; shareSomeScreen = false; shareSomeStream = false;  g.audioContext = null; document.id('av_toggler').style.color='#777'; setCookie('av', false, 144000);  setCookie('fmode', null, 0); aonly = 1; flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');}}).catch(err => console.log(err));
+fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {let role = respo; if (pcounter < room_limit) hack = true; if (role == 0 && hack) role = 1; if (aonly) { already_being_played = 0; if (document.id('room-header')) {document.id('room-header').style.color = oldColor; document.id('room-header-file').style.display = 'none';} document.id('av_toggler').className = "bigO av_toggler_f"; if (role == 1 || role == 2 || temporary) {setCookie('av', true, 144000); aonly = 0; flashText_and_rejoin('VIDEO ON!'); } else {flashText(caller + '<img style="&nbsp;margin-top:-72px;" src=/icons/bell' + sem + '2.png>');  document.id('av_toggler').className = "bigO av_toggler";}} else {if (playSomeMusic) {if (shareSomeStream) { if (document.getElementsByTagName('iframe')[7] && document.getElementsByTagName('iframe')[7].name == 'ifrr') {document.getElementsByTagName('iframe')[7].dispose();}} else {let myname = document.id('name').value; let myvideo = 'video-' + myname; if (document.id(myvideo)) {setCookie('cT_'+curMoviesList[0], document.id(myvideo).currentTime, 14400);}}} else {/*setCookie('cT_'+curMoviesList[0], null, 0);*/} cammode = 0; playSomeMusic = false; shareSomeScreen = false; shareSomeStream = false;  g.audioContext = null; document.id('av_toggler').style.color='#777'; setCookie('av', false, 144000);  setCookie('fmode', null, 0); aonly = 1; flashText_and_rejoin('AUDIO-ONLY'); setCookie('player', '');}}).catch(err => console.log(err));
 }
 
 const cli7 = () => {let sem  = window.innerWidth > 1024 ? '7' : '';

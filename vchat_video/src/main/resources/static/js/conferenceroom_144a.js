@@ -113,7 +113,7 @@ const swap_url = "https://coins.room-house.com";
 
 //const role  = 0; // debug
 
-//const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window.innerWidth <=1024 || window != window.top ? true : false; // set desktop like small_device
+// const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window.innerWidth <=1024 || window != window.top ? true : false; // set desktop like small_device
 const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window != window.top ? true : false;
 
 // if (document.id('zero_pcounter')) document.id('zero_pcounter').className = small_device ? document.id('zero_pcounter').className : 'participant solo main';
@@ -168,7 +168,7 @@ window.onload = function(){
    
 	let loneGuy = getCookie('loneGuy') || 0;
 		
-	if (loneGuy && typeof(loneGuy) !== 'undefined') {
+	if (loneGuy && typeof(loneGuy) !== 'undefined' && document.id('room-header')) {
 	  setCookie('loneGuy', 0, 1440); //console.log('here lone guy is', loneGuy);
 	  setTimeout(function() {
 	    document.getElementsByTagName('iframe')[0].contentDocument.getElementsByTagName('input')[5].click();
@@ -621,10 +621,10 @@ const register_body = (ro) => {
 		if (ro == -1) {soundEffect.src = "/sounds/lock.mp3"; setTimeout(function() {location.reload()}, 1200); console.log('Knock out2'); return false;}
 
 		//define in case the onload retarded; doesn't help in iOS?
-		let l = checkLang();		
-		change_lang(altlang[l]);
+		// let l = checkLang();		
+		// change_lang(altlang[l]);
 			
-		document.id('room-header').innerText = 'ROOM ' + room;
+		if (document.id('room-header')) document.id('room-header').innerText = 'ROOM ' + room;
 
 		document.id('join').style.display = 'none';
 
@@ -785,6 +785,8 @@ console.log('here token', tok,'val',document.id('asender').value,'name',document
 				if (document.id('bell')) document.id('bell').style.display = 'block';
 			}
 		}).delay(3000); // give more time to calc param values - or show the incorrect bell
+		
+		if (small_device) document.id('room-header').dispose(); // fuck off
 
 }
 
@@ -1385,7 +1387,7 @@ const onExistingParticipants = (msg) => {
 			
 			if (s === 'c') setTimeout(function() {if (document.id('anno_' + f)) document.id('anno_' + f).fade(0.02);}, 2000);
 			setTimeout(function() {if (document.id('one-' + f)) document.id('one-' + f).fade(0.5);}, 3000);
-			document.id('room-header').fade(0);		
+			if (document.id('room-header')) document.id('room-header').fade(0);		
 		}
 		
 		/*if (document.id('lol_' + f) && a.length && s === 'p' && window.top == window && !small_device) {
@@ -1520,7 +1522,7 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 						localStream = participant.rtcPeer.getLocalStream();
 						
 						if (small_device)  document.id(myname).style.float = 'none'; 				
-						document.id('room-header-file').style.display='none';
+						if (document.id('room-header')) document.id('room-header-file').style.display='none';
 					});
 		  	}
 		  	return false;
@@ -1530,7 +1532,7 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 				localStream = participant.rtcPeer.getLocalStream();
 		
 				if (small_device)  document.id(myname).style.float = 'none';
-				document.id('room-header-file').style.display='none';
+				if (document.id('room-header')) document.id('room-header-file').style.display='none';
                   	 }
 		  	 (function(){document.id('phones').fade(0);}).delay(1000);
 		}); //rtcPeer
@@ -1538,7 +1540,7 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 	} else if (shareSomeScreen) {
       
 		shareSomeScreen = true;
-		document.id('room-header').style.color = oldColor;
+		if (document.id('room-header')) document.id('room-header').style.color = oldColor;
       
 		startCapture({video: true}).then(stream => {
 /* mix microphone
@@ -1712,7 +1714,7 @@ console.log('doing mic mix in normal mode');
 						localStream = participant.rtcPeer.getLocalStream();
 						
 						if (small_device)  document.id(myname).style.float = 'none'; 					
-						document.id('room-header-file').style.display='none';
+						if (document.id('room-header')) document.id('room-header-file').style.display='none';
                           		   }
 			    		);
 			  	}
@@ -1733,7 +1735,7 @@ console.log('doing mic mix in normal mode');
 				localStream = participant.rtcPeer.getLocalStream();
 			
 				if (small_device)  document.id(myname).style.float = 'none';
-					document.id('room-header-file').style.display='none';
+					if (document.id('room-header')) document.id('room-header-file').style.display='none';
                   	 }
 		  	 (function(){document.id('phones').fade(0);}).delay(1000);
 			 
@@ -2144,11 +2146,12 @@ function setAnno(request) {
 	document.id('anno_' + request.participant).style.display='block';			
 	document.id('anno_' + request.participant).fade(1); /*if (cine) setTimeout(function() {document.id('anno_' + request.participant).fade(0.02);}, 2000);*/
 
-	document.id('room-header').fade(0);	
+	if (document.id('room-header')) document.id('room-header').fade(0);	
 }
 
 function handleFileSelectChange(v) {
 
+	if (!document.id('room-header')) return;
 	if (v === null || typeof(v) === 'undefined' || v.length === 0) return;
 	let fis = document.id('room-header-file').files;
 	for (var i = 0; i < fis.length; i++) {
@@ -2204,8 +2207,8 @@ function setMoviesList(request) {
 		document.id('anno_' + request.participant).style.display='block';			
 		document.id('anno_' + request.participant).fade(1); 
 		setTimeout(function() {if (document.id('anno_' + request.participant)) document.id('anno_' + request.participant).fade(0.02)}, 2000);
-		document.id('room-header').fade(0);
-		document.id('room-header-file').style.display='none';	 
+		if (document.id('room-header')) document.id('room-header').fade(0);
+		if (document.id('room-header')) document.id('room-header-file').style.display='none';	 
 	 	
 	}
 	
