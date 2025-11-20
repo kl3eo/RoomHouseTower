@@ -786,7 +786,7 @@ console.log('here token', tok,'val',document.id('asender').value,'name',document
 			}
 		}).delay(3000); // give more time to calc param values - or show the incorrect bell
 		
-		if (small_device) document.id('room-header').dispose(); // fuck off
+		if (small_device && document.id('room-header')) document.id('room-header').dispose(); // fuck off
 
 }
 

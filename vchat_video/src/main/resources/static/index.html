@@ -93,7 +93,18 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.44fb"></script>
+<script src="./js/a12.js?ver=1.44ff"></script>
+
+<!-- 20.11.25 use to prevent events rewrite-->
+<script src="./js/disable_dev_tool.js"></script>
+<script>
+DisableDevtool({
+    ondevtoolopen(type, next){
+        alert('Devtool opened with type:' + type);
+        next();
+    }
+});
+</script>
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />

@@ -214,6 +214,8 @@ public class CallHandler extends TextWebSocketHandler {
 		//if ( (sta.equals("1") && role.equals("0") && temporary.equals("0") && _role.equals("0")) || (!joinerRole.equals(role) && role.equals("0") && temporary.equals("0") && _role.equals("0")) || noSuchRoom.equals("1") ) {
 		if ( (sta.equals("1") && role.equals("0") && temporary.equals("0") && _role.equals("0")) || noSuchRoom.equals("1") ) {
 			log.info("ALARM1: joiner {} ", joinerName);
+		} else if (!joinerRole.equals(role) && !joinerRole.equals("") && role.equals("0") && temporary.equals("0") && _role.equals("0")) {
+			log.info("IMPERSONATOR: joiner {} ", joinerName);		
 		} else {
         		joinRoom(jsonMessage, session, room_limit, num_rooms, Roomees);
 		}

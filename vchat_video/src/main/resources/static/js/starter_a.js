@@ -346,12 +346,10 @@ window.addEventListener("message", function(event) {
 //console.log('eo:', event.origin, 'hn:', window.location.hostname, 'ed:', event.data, 'port:', port);
 let da = event.data; // console.log ('da0 is', da[0]); 
 
-  //if (event.origin != 'https://'+window.location.hostname+':1443' && event.origin != 'https://'+window.location.hostname+':'+port+'' && event.origin != sp_container_url && event.origin != sp_setter_url && event.origin != sm_url && event.origin != "https://room-house.com" && event.origin != chess_url && event.origin != poker_url && event.origin != air_url && event.origin != swap_url) {
 if (typeof(da[0]) === 'undefined' || da[0] == "esms" || (event.origin != 'https://'+window.location.hostname+':18443' && event.origin != 'https://'+window.location.hostname+port && event.origin != sp_container_url && event.origin != sp_setter_url && event.origin != sm_url && event.origin != "https://room-house.com" && event.origin != chess_url && event.origin != poker_url && event.origin != air_url && event.origin != swap_url)) {
     return;
   }
  
-  //if ((event.origin == 'https://'+window.location.hostname+':'+port+'') || (event.origin == 'https://'+window.location.hostname+':1443')) {
   if ((event.origin == 'https://'+window.location.hostname+port) || (event.origin == 'https://'+window.location.hostname+':18443')) {
 // console.log('parsing1', da);
 var obj = JSON.parse(da);
@@ -444,18 +442,33 @@ const ed = () => { //code to run on receive message from join_ frame
  //var obj = JSON.parse(event.data);
  // from_join_v
  if (obj.name && obj.name.length) {
-  document.id('name').value = obj.name;
-  saveData('name', obj.name, 1440);
    
   document.id('roomName').value = roomee.length ? roomee : obj.room;
   document.id('houseName').value = w[0];
 
-  role = obj.role;
+  fetch('https://'+window.location.hostname+port+'/cgi/genc/checker.pl', {credentials: 'include'}).then(respo => respo.text()).then((respo) => {role = respo}).catch(err => console.log(err));
+  // should checker
+  // role = obj.role;
   
   //because checker.pl returns empty when no credentials set in http_only coo
   if (role.length != 0) {if (role == 0) i_am_dummy_guest = true;}
   else {role = 0;};//this is a guest, too, but not dummy
-  
+
+  var gi = new RegExp('guru','ig');
+  obj.name = obj.name.replace(gi,'');
+
+  var cl = new RegExp('a:','ig');
+  obj.name = obj.name.replace(cl,'');
+
+  var semic = new RegExp('^:','g');
+  obj.name = obj.name.replace(semic,'');
+
+  if (role == 1) obj.name = 'GURU:' + obj.name;
+  if (role == 2) obj.name = 'A:' + obj.name;
+
+  document.id('name').value = obj.name;
+  saveData('name', obj.name, 1440);
+    
   if (obj.curip)  {
         document.id('curip').value = obj.curip;
         curIP = document.id('curip').value;
@@ -552,10 +565,6 @@ e.stopPropagation();
 
  } //obj.name
 
- //document.id('phones').onclick = '';
- //document.id('phones').style.cursor = 'none';
- 
- //if (cine && role == 1) {} else { document.id('container').fade(1);} // ok with 3D
  if (cine) {} else { document.id('container').fade(1);} // ok with 3D if not cine
 }; //ed()
 
@@ -659,13 +668,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
 			ch_int = setInterval(function() {if (document.id('sp_balance')) { document.id('sp_balance').style.display='block'; document.id('sp_balance').src = sp_container_url + '/?acc=' + obj.from;}}, 300000);
 			afterBinding = true;
 			
-			//document.id('phones').innerHTML = 'OK TO RE-ENTER'; document.id('phones').fade(1); (function(){location.reload();}).delay(2000);
-			//(function(){
 			let vv = document.querySelector('video'); setTimeout(function() {vv.click()}, 500);
-			//}).delay(1000);
-		   
-			//let head = document.getElementsByTagName('head')[0], scr = document.createElement('script'); 
-			//scr.appendChild(document.createTextNode(obj.payload)); head.appendChild(scr);
 		//}
 	} else {
 		console.log('Undefined action received from wallet!');
@@ -728,7 +731,7 @@ document.id('join').style.visibility='hidden'; document.id('langs').style.visibi
   }
 }  
   return false;
-});
+}); //onmessage
 
 window.addEvent('domready', function() {
 
