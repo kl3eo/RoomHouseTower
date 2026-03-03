@@ -1901,6 +1901,12 @@ const receiveVideo = (sender, mode, role) => {
 		}
 		
 	};
+
+	var constraints_alt = {
+                audio : true,
+		video : true
+		
+	};
 	
 	var options = {
 		remoteVideo: g.video,
@@ -1913,24 +1919,47 @@ const receiveVideo = (sender, mode, role) => {
 		mediaConstraints: constraints,
 		onicecandidate: participant.onIceCandidate.bind(participant)
 	}
+
+	var options_alt = {
+		remoteVideo: g.video,
+		mediaConstraints: constraints_alt,
+		onicecandidate: participant.onIceCandidate.bind(participant)
+	}
 	
 	options = mode === 'a' ? options_aonly : options;
-// console.log('in receiveVideo2, options', options);
-	
-	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+
+	// added error handler and changed to Sendrecv because iPhone stopped working -- ash 03/26
+	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options_alt,
 	function (error) {
 		if(error) {
-			return console.error(error);
+		  	var ff = new RegExp('closed','ig');
+		  	if (error.toString().match(ff)) {
+		  	} else {
+				participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options_alt,
+					function (error) {
+                                        	if(error) {
+                                                	return console.error(error);
+                                        	}
+				
+                                        	startVideo(g.video);
+                                        	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+						
+						if (small_device)  {
+							document.id(sender).style.float = 'none';
+							document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
+						}
+					});
+		  	}
+		  	return false;
 		}
 
-			startVideo(g.video);
-			this.generateOffer (participant.offerToReceiveVideo.bind(participant));
-			// remoteStream = participant.rtcPeer.getRemoteStream();console.log('Here remoteStream', remoteStream);
+		startVideo(g.video);
+		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 			
-			if (small_device)  {
-				document.id(sender).style.float = 'none';
-				document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
-			}
+		if (small_device)  {
+			document.id(sender).style.float = 'none';
+			document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
+		}
 
 	});
 

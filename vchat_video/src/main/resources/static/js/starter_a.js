@@ -384,6 +384,7 @@ const sho = () => {
 
 const ed = () => { //code to run on receive message from join_ frame
  
+ document.id('join').style.display='none';
  if (document.id('cont')) document.id('cont').fade(0);
  if (document.id('badge')) document.id('badge').fade(0);
  if (document.id('learn_more')) document.id('learn_more').fade(0);
