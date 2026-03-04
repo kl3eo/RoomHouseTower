@@ -1287,8 +1287,9 @@ const onExistingParticipants = (msg) => {
 			if (pctr > room_limit - 1 && role == 0) {document.id('bell').style.display = 'block'; document.id('av_toggler').style.display='none';}
 
 			if (!small_device) resizer(pctr);
-		
+			
 			receiveVideo(f, s, role);
+			
 			let coo_volume = loadData(f+'_volume');
 			
 			if (document.id('slider_' + f)) document.id('slider_' + f).value = coo_volume;
@@ -1316,7 +1317,7 @@ const onExistingParticipants = (msg) => {
 		}		
 
 		if (cine) {
-			(function() {if (document.id('loco_' + f)) document.id('loco_' + f).fade(0); if (document.id('span_' + f))document.id('span_' + f).fade(0);}).delay(2000);
+			(function() {if (document.id('loco_' + f)) document.id('loco_' + f).fade(0); }).delay(2000);
 		}
 				
 		if (document.id('acco_' + f) && ValidateAccountId(ac)) {
@@ -1941,24 +1942,28 @@ const receiveVideo = (sender, mode, role) => {
                                                 	return console.error(error);
                                         	}
 				
-                                        	startVideo(g.video);
+                                        	
+						if (document.id('span_' + sender)) document.id('span_' + sender).fade(0);
+						startVideo(g.video);
                                         	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 						
 						if (small_device)  {
 							document.id(sender).style.float = 'none';
-							document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
+							document.id(sender).className = PARTICIPANT_MAIN_CLASS;
 						}
 					});
 		  	}
 		  	return false;
 		}
 
+		
+		if (document.id('span_' + sender)) document.id('span_' + sender).fade(0); 
 		startVideo(g.video);
 		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
-			
+
 		if (small_device)  {
 			document.id(sender).style.float = 'none';
-			document.id(sender).className = PARTICIPANT_MAIN_CLASS; 
+			document.id(sender).className = PARTICIPANT_MAIN_CLASS;
 		}
 
 	});
