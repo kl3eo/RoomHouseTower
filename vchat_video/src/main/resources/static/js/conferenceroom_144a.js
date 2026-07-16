@@ -52,7 +52,7 @@ var rect;
 
 var g = {}
 var playSomeMusic = false;
-var playSomeMusic_muted = true;
+var playSomeMusic_muted = false;
 var mediaSource;
 var analyser;
 var N = 0;
@@ -1930,8 +1930,10 @@ const receiveVideo = (sender, mode, role) => {
 	options = mode === 'a' ? options_aonly : options;
 
 	// added error handler and changed to Sendrecv because iPhone stopped working -- ash 03/26
-	participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options_alt,
-	function (error) {
+	
+	if (check_iOS()) {
+	  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options_alt,
+	  function (error) {
 		if(error) {
 		  	var ff = new RegExp('closed','ig');
 		  	if (error.toString().match(ff)) {
@@ -1943,7 +1945,7 @@ const receiveVideo = (sender, mode, role) => {
                                         	}
 				
                                         	
-						if (document.id('span_' + sender)) document.id('span_' + sender).fade(0);
+						if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0);
 						startVideo(g.video);
                                         	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 						
@@ -1957,7 +1959,7 @@ const receiveVideo = (sender, mode, role) => {
 		}
 
 		
-		if (document.id('span_' + sender)) document.id('span_' + sender).fade(0); 
+		if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0); 
 		startVideo(g.video);
 		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
 
@@ -1966,7 +1968,46 @@ const receiveVideo = (sender, mode, role) => {
 			document.id(sender).className = PARTICIPANT_MAIN_CLASS;
 		}
 
-	});
+	  });
+	} else {
+	  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+	  function (error) {
+		if(error) {
+		  	var ff = new RegExp('closed','ig');
+		  	if (error.toString().match(ff)) {
+		  	} else {
+				participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
+					function (error) {
+                                        	if(error) {
+                                                	return console.error(error);
+                                        	}
+				
+                                        	
+						if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0);
+						startVideo(g.video);
+                                        	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+						
+						if (small_device)  {
+							document.id(sender).style.float = 'none';
+							document.id(sender).className = PARTICIPANT_MAIN_CLASS;
+						}
+					});
+		  	}
+		  	return false;
+		}
+
+		
+		if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0); 
+		startVideo(g.video);
+		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+
+		if (small_device)  {
+			document.id(sender).style.float = 'none';
+			document.id(sender).className = PARTICIPANT_MAIN_CLASS;
+		}
+
+	  });
+	}
 
 	if (!cine) (function() {participant.activateMicIndic()}).delay(3000);	
 }

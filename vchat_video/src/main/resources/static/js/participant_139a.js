@@ -247,7 +247,7 @@ function Participant(name, myname, mode, myrole) {
 	
 	let rrname = rname.length > 11 ? rname.substr(0,11) + '..' : rname;
 	
-	if (true_cine) rrname = '..LOADING..';
+	if (true_cine && name !== myname) rrname = '..LOADING..';
 
 	if (ar[0] !== "DUMMY") span.appendChild(document.createTextNode(rrname));
 	span.style.zIndex = '1002';
