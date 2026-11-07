@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-#   Copyright (c) 2021-25 Alex Shevlakov alex@motivation.ru
+#   Copyright (c) 2021-26 Alex Shevlakov alex@motivation.ru
 #   All Rights Reserved.
 
 #   This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,8 @@ var vcounter = 0;
 var i_am_guest = 0;
 var registered = 0;
 var guru_is_here = 0;
+var gcounter = 0;
+var ggcounter = 0;
 
 var problems = 0;
 var suspected = 0;
@@ -96,6 +98,9 @@ var saved_top = '';
 const ua = navigator.userAgent.toLowerCase();
 const isAndroid = ua.indexOf("android") > -1;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const is_iOS = /iPad|iPhone|iPod/i.test(ua);
+
+const left_max = is_iOS || isAndroid ? 300 : 400;
 
 const fps = 15;
 const wi = 640;
@@ -115,8 +120,6 @@ const swap_url = "https://coins.room-house.com";
 
 // const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window.innerWidth <=1024 || window != window.top ? true : false; // set desktop like small_device
 const small_device = ((check_iOS() || isAndroid) && screen.width <= 1024) || window != window.top ? true : false;
-
-// if (document.id('zero_pcounter')) document.id('zero_pcounter').className = small_device ? document.id('zero_pcounter').className : 'participant solo main';
 
 const tablet = small_device && screen.width >= 960 ? true : false;
 const notebook = screen.height <= 800 ? true : false;
@@ -345,19 +348,27 @@ screen.orientation.onchange = function (){
     // logs 'portrait' or 'landscape'
     //console.log(screen.orientation.type.match(/\w+/)[0]);
     if (document.id('viewer_menu')) document.id('viewer_menu').setStyles({'opacity': 0,'zIndex': 0});
-    let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
-    let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
-    if (document.id('viewer_menu')) setTimeout(function() {window.innerWidth < window.innerHeight && document.id('viewer_menu').setStyles({'zIndex': zi}) && document.id('viewer_menu').fade(vis);}, 1000);
+
+    if (document.id('viewer_menu')) setTimeout(function() {
+    	let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine ? small_device ? 1 : 1 : 0;
+    	let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine  ? 10111 : 0;
+	console.log('2:fade vis', vis, 'true_cine', true_cine)
+    	window.innerWidth < window.innerHeight && document.id('viewer_menu').setStyles({'zIndex': zi}) && document.id('viewer_menu').fade(vis);
+    }, 1000);
 };
 } else if (check_iOS()) {
     window.onorientationchange = function () {
       if (document.id('viewer_menu')) document.id('viewer_menu').setStyles({'opacity': 0,'zIndex': 0});
-      let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
-      let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
+
       if (Math.abs(window.orientation) === 90) {
         // Landscape
       } else {
-    	if (document.id('viewer_menu')) setTimeout(function() {document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);}, 1000);
+    	if (document.id('viewer_menu')) setTimeout(function() {
+		let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine ? small_device ? 1 : 1 : 0;
+      		let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine  ? 10111 : 0;
+		console.log('3:fade vis', vis, 'true_cine', true_cine)
+      		document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);
+	}, 1000);
       }
     }
 }
@@ -828,7 +839,7 @@ const onNewViewer = (request) => {
 		
 		if (myname != request.name) {
 
-		   let left_random = 60 + Math.floor(Math.random() * 400);
+		   let left_random = 60 + Math.floor(Math.random() * left_max);
 		   let top_random = 60 + (-1) * Math.floor(Math.random() *30);
 
 		   let x = document.id('video-' + f) && document.id('video-' + f).muted == true ? 'X' : '';
@@ -850,9 +861,13 @@ const onNewViewer = (request) => {
 		
 		vcounter = cur; if (document.id('vcounter')) document.id('vcounter').innerHTML = vcounter;
 		
-		let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
-		let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
-		if (document.id('viewer_menu') && !lori) setTimeout(function() {document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);}, 1000);
+
+		if (document.id('viewer_menu') && !lori) setTimeout(function() {
+			let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine ? small_device ? 1 : 1 : 0;
+			let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine  ? 10111 : 0;
+			console.log('4:fade vis', vis, 'true_cine', true_cine)
+			document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);
+		}, 1000);
 				
 		if (just_left != f && document.id('name').value != f && document.id('name').value != just_left) { if (cine) {soundEffect.src = "/sounds/coin.mp3";} else {soundEffect.src = "/sounds/steps.mp3";}}
 }
@@ -861,7 +876,7 @@ const onNewParticipant = (request) => {
 
   if (request.currRoom && currRoom != request.currRoom) return false; // do not connect those coming to a room other than mine current
   
-  if (document.id('zero_pcounter')) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}
+  if (document.id('zero_pcounter') && !cine) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}
     
   if (request.ng) {if (document.id('num_guests')) document.id('num_guests').innerHTML = request.ng;}
 	
@@ -981,9 +996,13 @@ const onNewParticipant = (request) => {
 		}
 
 	}
-		let vis = i_am_viewer && vcounter === 1 && cine && (request.mode == 'p' || request.mode == 'c')? small_device ? 1 : 1 : 0;
-		let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
-		if (document.id('viewer_menu') && !lori) setTimeout(function() {document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);}, 1000);
+
+		if (document.id('viewer_menu') && !lori) setTimeout(function() {
+			let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine && (request.mode == 'p' || request.mode == 'c')? small_device ? 1 : 1 : 0;
+			let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine  ? 10111 : 0;
+			console.log('5:fade vis', vis, 'true_cine', true_cine)
+			document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);
+		}, 1000);
 }
 
 function receiveVideoResponse(result) {
@@ -1074,20 +1093,20 @@ const onExistingViewers = (msg) => {
 			}
 		} 
 		
-		let left_random = f != myname ? 60+ Math.floor(Math.random() * 400) : 10;
+
+		let left_random = f != myname ? 60+ Math.floor(Math.random() * left_max) : 10;
 		let top_random = f != myname ? 60 + (-1) * Math.floor(Math.random() * 30) : 90;
 		
 		let rs = f != myname ? '60px': '60px';
 		let br = f != myname ? '30px': '30px';
 		let bg = f != myname ? '#012': '#012';
+		
+		let x = document.id('video-' + f) && document.id('video-' + f).muted == true  ? 'X' : '';
 
 		if (i_am_viewer && myname != f && cine) {
 		
 			receiveCGAudio(f, 'a');
 
-			let x = document.id('video-' + f) && document.id('video-' + f).muted == true && myname != f ? 'X' : '';
-			x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
-			x = document.id('video-' + f) ? x : '';
 
 			theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {document.id(\'video-' + f + '\').muted=document.id(\'video-' + f + '\').muted == true ? false : true; document.id(\'sndm_' + f + '\').innerText=document.id(\'video-' + f + '\').muted == true ? \'X\' : \'\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';
 		}
@@ -1111,30 +1130,18 @@ const onExistingViewers = (msg) => {
 			}
 
 			cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function(error) {
-                  	   if(error) {
-				var ff = new RegExp('closed','ig');
-				if (error.toString().match(ff)) { } else {
-			  		cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendonly(options, function (error) {
-                                        if(error) {
-                                                return console.error(error);
-                                        }
-                                        	startVideo(g.video);
-                                        	this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
-						localStream = cinemaGoer.rtcPeer.getLocalStream();
-                         		});
+				if(error) {
+					return console.error(error);
 				}
-
-				return false;
-                  	   } else {
+				
                   		startVideo(g.video);
                   		this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
 				localStream = cinemaGoer.rtcPeer.getLocalStream();
 
 				x = document.id('video-' + f) && myname === f ? localStream.getAudioTracks()[0].enabled ? '' : 'X' : x;
 
-				/*theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="if (document.id(\'video-' + f + '\')) {localStream.getAudioTracks()[0].enabled = localStream.getAudioTracks()[0].enabled === true ? false : true; document.id(\'sndm_' + f + '\').innerText = localStream.getAudioTracks()[0].enabled === true ? \'\' : \'X\';}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';*/
 				theater_rows = theater_rows + '<div id=_th_'+suf +' style="position:absolute; left:'+left_random+'px;top:'+top_random+'px;width:'+rs+';height:'+rs+';border-radius:'+br+';background:'+bg+';padding-top:45px;cursor:pointer;z-index:2001;" onclick="let yon = confirm(\'Disconnect and reload?\');if (yon) {let n = document.id(\'name\').value; setCookie(\'disconnect\', true, 1); delete localStream; delete cinemaGoers[n].rtcPeer; delete cinemaGoers[n]; location.reload()}"><div id="sndm_'+f+'" class="snd_meters" style="z-index:10112;font-size:16px;color:#fed">' + x + '</div><span id=th_' + suf + ' style="color:#9cf;cursor:pointer;">' + t + '</span></div>';	
-		  	   }
+
          		});		
 		}
 		
@@ -1164,9 +1171,12 @@ const onExistingViewers = (msg) => {
 
    }
 
-   let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
-   let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
-   if (document.id('viewer_menu') && !lori) setTimeout(function() {document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);}, 1000);
+   if (document.id('viewer_menu') && !lori) setTimeout(function() {
+   	let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine && Object.keys(participants).length === 1 ? small_device ? 1 : 1 : 0;
+   	let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine && Object.keys(participants).length === 1 ? 10111 : 0;
+	console.log('6:fade vis', vis, 'true_cine', true_cine)
+   	document.id('viewer_menu').setStyles({'zIndex': zi}); document.id('viewer_menu').fade(vis);
+   }, 1000);
 }
 
 const set_guru = (par, who) => {
@@ -1264,7 +1274,7 @@ const onExistingParticipants = (msg) => {
 
 //
    if (msg.data) {
-	   if (document.id('zero_pcounter')) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}	   
+	   if (document.id('zero_pcounter') && !cine) {document.id('zero_pcounter').fade(0); document.id('zero_pcounter').style.display='none';}	   
 	   cinemaEnabled = false; num_cinemas = 0;
 	   let top_buf = 0;
 	   for (var i = 0; i < msg.data.length; i++) {
@@ -1520,7 +1530,7 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
 				
                                         	startVideo(g.video);
                                         	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
-						localStream = participant.rtcPeer.getLocalStream();
+						// localStream = participant.rtcPeer.getLocalStream();
 						
 						if (small_device)  document.id(myname).style.float = 'none'; 				
 						if (document.id('room-header')) document.id('room-header-file').style.display='none';
@@ -1530,7 +1540,7 @@ if (all_muted === true || all_muted === 'true') i_am_muted = true;
                   	 } else {
                   	  	startVideo(g.video);
 				this.generateOffer (participant.offerToReceiveVideo.bind(participant));
-				localStream = participant.rtcPeer.getLocalStream();
+				// localStream = participant.rtcPeer.getLocalStream();
 		
 				if (small_device)  document.id(myname).style.float = 'none';
 				if (document.id('room-header')) document.id('room-header-file').style.display='none';
@@ -1799,8 +1809,8 @@ console.log('doing mic mix in normal mode');
 	(function() {document.id(myname).style.display='block'; document.id(myname).fade(1);}).delay(500);//need this animation because the new video appears under the row, so we hide it
    }// if role
 
-   //inform viewers there are no participants
-   (function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter')) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
+   //inform viewers there are no participants, unless cine
+   (function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter') && !cine) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
    
    request('https://'+window.location.hostname+port+'/cgi/genc/get_acc_id.pl').then(data => {
      if (role == 0 && cinemaEnabled && !data.length) {
@@ -1931,7 +1941,8 @@ const receiveVideo = (sender, mode, role) => {
 
 	// added error handler and changed to Sendrecv because iPhone stopped working -- ash 03/26
 	
-	if (check_iOS()) {
+	if (check_iOS() && ggcounter == 0 ) {
+
 	  participant.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options_alt,
 	  function (error) {
 		if(error) {
@@ -1948,6 +1959,7 @@ const receiveVideo = (sender, mode, role) => {
 						if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0);
 						startVideo(g.video);
                                         	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+						ggcounter++;
 						
 						if (small_device)  {
 							document.id(sender).style.float = 'none';
@@ -1962,6 +1974,7 @@ const receiveVideo = (sender, mode, role) => {
 		if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0); 
 		startVideo(g.video);
 		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+		ggcounter++;
 
 		if (small_device)  {
 			document.id(sender).style.float = 'none';
@@ -1986,6 +1999,7 @@ const receiveVideo = (sender, mode, role) => {
 						if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0);
 						startVideo(g.video);
                                         	this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+						if (check_iOS() && gcounter == 0) {gcounter++; alert('connecting: click on Close!')}
 						
 						if (small_device)  {
 							document.id(sender).style.float = 'none';
@@ -2000,6 +2014,7 @@ const receiveVideo = (sender, mode, role) => {
 		if (document.id('span_' + sender) && cine) document.id('span_' + sender).fade(0); 
 		startVideo(g.video);
 		this.generateOffer (participant.offerToReceiveVideo.bind(participant));
+		if (check_iOS() && gcounter == 0) {(function () {gcounter++; alert('connecting: click on Close!')}).delay(500)}
 
 		if (small_device)  {
 			document.id(sender).style.float = 'none';
@@ -2030,8 +2045,23 @@ const receiveCGAudio = (sender, mode) => {
 		onicecandidate: cinemaGoer.onIceCandidate.bind(cinemaGoer)
 	}
 	
-console.log('receiveCGAudio for', sender, 'options are', options);	
+console.log('receiveCGAudio for', sender, 'options are', options);
+	
 
+	if (check_iOS() && false ) {
+	cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options,
+	function (error) {
+		if(error) {
+			return console.error(error);
+		}
+
+			startVideo(g.video);
+			this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
+
+			
+			//remoteStream = cinemaGoer.rtcPeer.getRemoteStream();
+	});
+	} else {
 	cinemaGoer.rtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options,
 	function (error) {
 		if(error) {
@@ -2040,10 +2070,12 @@ console.log('receiveCGAudio for', sender, 'options are', options);
 
 			startVideo(g.video);
 			this.generateOffer (cinemaGoer.offerToReceiveVideo.bind(cinemaGoer));
+			//this alert is magic interaction which unblocks the stream
+			if (check_iOS() && gcounter == 0) {gcounter++; alert('connecting: click on Close!')}
 			
 			//remoteStream = cinemaGoer.rtcPeer.getRemoteStream();
 	});
-
+	}
 	if (cine) (function() {cinemaGoer.activateMicIndic()}).delay(3000);
 }
 
@@ -2463,7 +2495,7 @@ const onParticipantLeft = (request) => {
 		if (pcounter < room_limit) {document.id('bell').style.display = 'none'; document.id('av_toggler').style.display='block';}
 		
 		//inform viewers there are no participants
-		(function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter')) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
+		(function() { if (Object.keys(participants).length == 0) {if (document.id('zero_pcounter') && !cine) {document.id('zero_pcounter').style.display='block'; document.id('zero_pcounter').fade(0.5);}}}).delay(1500);
 
 		delete g.video; //?!
 
@@ -2534,9 +2566,12 @@ const onViewerLeft = (n) => {
 		document.id('audience_boxx').innerHTML = cur == '...' ? 'Audience is empty :(' : document.id('audience_boxx').innerHTML;
 		chat_shown = 1; document.id('logger').click(); document.id('audience').click();
 		
-		let vis = i_am_viewer && vcounter === 1 && cine ? small_device ? 1 : 1 : 0;
-		let zi = i_am_viewer && vcounter === 1 && cine  ? 10111 : 0;
-		if (document.id('viewer_menu') && !lori) setTimeout(function() {document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);}, 1000);
+		if (document.id('viewer_menu') && !lori) setTimeout(function() {
+			let vis = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine ? small_device ? 1 : 1 : 0;
+			let zi = i_am_viewer && Object.keys(cinemaGoers).length === 1 && true_cine  ? 10111 : 0;
+			console.log('1:fade vis', vis, 'true_cine', true_cine)
+			document.id('viewer_menu').setStyles({'zIndex': zi});document.id('viewer_menu').fade(vis);
+		}, 1000);
 	}
 	if (document.id('_th_'+suf)) {
 		document.id('_th_'+suf).dispose();

@@ -50,7 +50,7 @@
 <script>var w = window.location.hostname.split('.'); var hack = false; var roomee = ''; var normal_mode = true; var i_am_muted = false; var role = 0;
 var ho = document.location.href.split('#'); var homee = ho[1] && ho[1].length ? ho[1].toUpperCase() : w[0]; if (ho[1] && ho[1].length && ho[1] !== homee) document.location.href = ho[0] + '#' + homee;
 const cine = homee === 'GREENHALL' || homee === 'REDHALL' || homee === 'BLUEHALL' || w[0] == 'cine' ||  w[0] == 'cinema' ? true : false;
-const true_cine =  w[0] == 'cine' ||  w[0] == 'cinema' ? true : false;
+const true_cine =  cine && homee !== 'GREENHALL' ? true : false;
 const is_ipaddr = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(window.location.hostname)
 
 var currRoom = 'A';
@@ -93,10 +93,10 @@ const city_or_main = 1;
 <script src="./js/checkDeviceSupport.js"></script>
 
 <script src="https://en.room-house.com/files/cur_104.js"></script>
-<script src="./js/a12.js?ver=1.45"></script>
+<script src="./js/a12.js?ver=1.47"></script>
 
 <!-- 20.11.25 use to prevent events rewrite-->
-<script src="./js/disable_dev_tool.js"></script>
+<!--script src="./js/disable_dev_tool.js"></script>
 <script>
 DisableDevtool({
     ondevtoolopen(type, next){
@@ -104,7 +104,7 @@ DisableDevtool({
         next();
     }
 });
-</script>
+</script -->
 
 <link rel="stylesheet" href="./css/mBoxCore.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="./css/mBoxModal.css" type="text/css" media="screen" />

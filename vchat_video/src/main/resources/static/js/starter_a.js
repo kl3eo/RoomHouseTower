@@ -1,5 +1,5 @@
 /*
-#   Copyright (c) 2021-25 Alex Shevlakov alex@motivation.ru
+#   Copyright (c) 2021-26 Alex Shevlakov alex@motivation.ru
 #   All Rights Reserved.
 
 #   This program is free software; you can redistribute it and/or modify
@@ -97,7 +97,7 @@ function change_lang(l) {
 	if (document.id('rightlab')) document.id('rightlab').innerHTML=right_label.get(l);
 	if (document.id('dummy_p')) document.id('dummy_p').innerHTML=du_.get(l);
 	if (document.id('dummy2_p')) document.id('dummy2_p').innerHTML=du2_.get(l);
-	if (document.id('zero_pcounter')) document.id('zero_pcounter').innerHTML = noner_.get(l);
+	if (document.id('zero_pcounter') && !cine) document.id('zero_pcounter').innerHTML = noner_.get(l);
 		
 	warning = warner.get(l);
 	waiter = waiter_.get(l);
@@ -418,7 +418,7 @@ const ed = () => { //code to run on receive message from join_ frame
 	
 	document.id('house').style.display = 'block'; document.id('house').style.visibility='visible';
 		
-	let bgr = homee == 'REDHALL' ? 'red' : homee == 'BLUEHALL' ? 'blue' : homee == 'GREENHALL' ? 'green' : 'empty';
+	let bgr = homee == 'REDHALL' ? 'red' : homee == 'BLUEHALL' ? 'blue' : homee == 'GREENHALL' ? 'smoke' : 'empty';
 
 	document.id('city').style.background = bgr != 'empty' ?  'url(/img/' + bgr + '_screen.jpg) center center no-repeat' : null;
  	(function(){document.id('phones').fade(0);}).delay(100);
@@ -590,7 +590,10 @@ let na = getCookie('name'); if (na != null && na != 'null') {
 	 if (document.id('loading_span')) document.id('loading_span').fade(0);
 
 document.id('join').style.visibility='hidden'; document.id('langs').style.visibility='hidden'; document.id('house').style.visibility='hidden';
-(function() {document.id('phones').style.cursor = 'pointer';document.id('phones').style.paddingTop = '0vh'; document.id('phones').style.display='block'; document.id('phones').fade(1);  document.id('phones').onclick = function() { if (w[0] == homee) {/*console.log('equal, sho!');*/ sho();} else {/*console.log('not equal, ed!');*/ ed();}}; if (document.id('loading_span')) document.id('loading_span').style.display='none'; if (!cine) {let l = checkLang();document.id('ph_b').style.background = '#112'; document.id('ph_b').innerHTML = '<div id="locked_w" style="margin-top:20%;">'+lo_.get(altlang[l])+'</div>';(function(){document.id('locked_w').fade(0); (function(){location.reload();}).delay(500)}).delay(2000);} if (document.id('ph_b')) document.id('ph_b').style.visibility='visible'; console.log('here we are! role is', role);}).delay(500);
+// old way with pictures
+/* (function() {document.id('phones').style.cursor = 'pointer';document.id('phones').style.paddingTop = '0vh'; document.id('phones').style.display='block'; document.id('phones').fade(1);  document.id('phones').onclick = function() { if (w[0] == homee) {sho();} else {ed();}}; if (document.id('loading_span')) document.id('loading_span').style.display='none'; if (!cine) {let l = checkLang();document.id('ph_b').style.background = '#112'; document.id('ph_b').innerHTML = '<div id="locked_w" style="margin-top:20%;">'+lo_.get(altlang[l])+'</div>';(function(){document.id('locked_w').fade(0); (function(){location.reload();}).delay(500)}).delay(2000);} if (document.id('ph_b')) document.id('ph_b').style.visibility='visible'; console.log('here we are! role is', role);}).delay(500); */
+// new way, no pictures
+if (document.id('loading_span')) document.id('loading_span').style.display='none'; document.id('phones').style.paddingTop = '0vh'; if (document.id('ph_b') && !cine) document.id('ph_b').style.visibility='visible'; document.id('phones').onclick = function() { if (w[0] == homee) {/*console.log('equal, sho!');*/ sho();} else {/*console.log('not equal, ed!');*/ ed();}}; document.id('phones').click();
 }
 
 // fix area above video for three.js canvas clicks

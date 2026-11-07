@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-#   Copyright (c) 2021-25 Alex Shevlakov alex@motivation.ru
+#   Copyright (c) 2021-26 Alex Shevlakov alex@motivation.ru
 #   All Rights Reserved.
 
 #   This program is free software; you can redistribute it and/or modify
@@ -122,13 +122,8 @@ function Participant(name, myname, mode, myrole) {
 	//if (coo_muted === null || coo_muted === 'null') coo_muted = i_am_guru ? all_muted : this_is_guru ? all_muted: true;
 	//or all allowed
 	if (coo_muted === null || coo_muted === 'null') coo_muted = all_muted;
-	//or only guru can hear others
-	//if (coo_muted === null || coo_muted === 'null') coo_muted = (i_am_guru || this_is_unmuted) ? all_muted : true;
-	
-	// (mode == 'm' || check_iOS()) coo_muted = true; // ios stupid block video unless sound off
-	// if (mode == 'm' || check_iOS() || isAndroid) coo_muted = true; //?! better all smart phones/tablets muted on default in cinema
+
 	if (mode == 'm' || mode == 'c' || mode == 'p') coo_muted = true; // ?!
-	// coo_muted = true; // serpom po mandarinam
 	
 	var coo_volume = loadData(name+'_volume');
 
@@ -453,6 +448,7 @@ function Participant(name, myname, mode, myrole) {
 	this.activateMicIndic = function() {
 
 	  if (name != myname && !playSomeMusic) {
+		// why two contexts for audio? try it
 		let ac = new AudioContext();
 		console.log('newed ac1..');
 		let soundMeter = new SoundMeter(ac);
@@ -493,10 +489,12 @@ function Participant(name, myname, mode, myrole) {
 		//let cond1 = audioMeter > 0;
 		//let cond2 = audioPeakDB > -200;
 		//let cond3 = mic_muted;
-		// console.log('Here cond1', cond1, 'cond2',cond2, 'cond3',cond3);		  
+		// console.log('Here cond1', cond1, 'cond2',cond2, 'cond3',cond3);
+		
+		const alim = check_iOS() ? -300 : -200		  
 		  
-		  // not working on ios ?
-		  if (document.id('sndm_'+name) && !check_iOS()) {/*console.log('.. received',soundMeter.instant.toFixed(3));*/document.id('sndm_'+name).style.background = soundMeter.instant.toFixed(3) > 0.001 ? '#090' : 'transparent'; if (audioMeter === 0 && audioPeakDB < -200 && !mic_muted) { mic_muted = true; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);speaker.appendChild(document.createTextNode('X'));speaker.style.pointerEvents='none'; this.mode = 'm';} if (audioMeter > 0 && mic_muted) { mic_muted = false; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);if (!video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD0A'));if (video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD07'));speaker.style.pointerEvents='auto';}} else {clearInterval(inte)}
+		  // working on ios now (?! other guy's indicator stops on ios when other guy re-enters; &works fine before)
+		  if (document.id('sndm_'+name)) {/*console.log('.. received',soundMeter.instant.toFixed(3));*/document.id('sndm_'+name).style.background = soundMeter.instant.toFixed(3) > 0.001 ? '#090' : 'transparent'; if (audioMeter === 0 && audioPeakDB < alim && !mic_muted) { mic_muted = true; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);speaker.appendChild(document.createTextNode('X'));speaker.style.pointerEvents='none'; this.mode = 'm';} if (audioMeter > 0 && mic_muted) { mic_muted = false; let speaker = document.id('speaker-'+name); speaker.removeChild(speaker.childNodes[0]);if (!video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD0A'));if (video.muted) speaker.appendChild(document.createTextNode('\uD83D\uDD07'));speaker.style.pointerEvents='auto';}} else {clearInterval(inte)}
 		  
 		}, 200);}
 		
